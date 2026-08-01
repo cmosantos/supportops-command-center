@@ -2,7 +2,7 @@
 
 ## Status
 
-**Ready**
+**Done**
 
 ## Objective
 
@@ -77,17 +77,17 @@ and any shell/external-command execution capability.
 
 ## Tasks
 
-- [ ] Confirm ST-01 regression and isolated baseline.
-- [ ] Define incident/event/approval domain models and lifecycle invariants.
-- [ ] Define repository, migration, and Unit of Work ports.
-- [ ] Implement versioned migration artifacts and transactional runner.
-- [ ] Implement connection factory with FK, timeout, and safe error translation.
-- [ ] Implement SQLite repositories and Unit of Work with parameterized SQL.
-- [ ] Implement lifecycle and approval application services.
-- [ ] Extend composition root and CLI with database/lifecycle commands.
-- [ ] Add real-SQLite contract/integration/locking/rollback/security/smoke tests.
-- [ ] Update architecture, README, progress, pending, evidence, and File List.
-- [ ] Run all quality gates, manual CLI lifecycle, DoD, and QA review.
+- [x] Confirm ST-01 regression and isolated baseline.
+- [x] Define incident/event/approval domain models and lifecycle invariants.
+- [x] Define repository, migration, and Unit of Work ports.
+- [x] Implement versioned migration artifacts and transactional runner.
+- [x] Implement connection factory with FK, timeout, and safe error translation.
+- [x] Implement SQLite repositories and Unit of Work with parameterized SQL.
+- [x] Implement lifecycle and approval application services.
+- [x] Extend composition root and CLI with database/lifecycle commands.
+- [x] Add real-SQLite contract/integration/locking/rollback/security/smoke tests.
+- [x] Update architecture, README, progress, pending, evidence, and File List.
+- [x] Run all quality gates, manual CLI lifecycle, DoD, and QA review.
 
 ## Required tests
 
@@ -114,41 +114,116 @@ offline/prohibited-import/API scan; full ST-01 regression.
 
 ### Agent
 
+@dev — Dex
+
 ### Model
+
+GPT-5 Codex
 
 ### Started At
 
+2026-08-01
+
 ### Completed At
+
+2026-08-01
 
 ### Implementation Notes
 
+- Implemented only the binding `OPEN/CLOSED` state machine.
+- Added stdlib SQLite connection factory, FK/busy timeout/WAL, checksummed ordered
+  migrations, non-mutating status, explicit transactions, and Unit of Work.
+- Added incident/event/approval models, allowlisted optimistic updates,
+  append-only audit records, close/reopen cycles, and irreversible logical delete.
+- Exact approvals bind incident/action/version/digest/canonical snapshot and only
+  record a declared, unauthenticated identity; they trigger no action.
+- CLI contains no SQL and all values handled by repositories use parameters.
+
 ### Debug Log References
+
+- `apply_patch` failed with Windows `CreateProcessWithLogonW`; authorized localized
+  PowerShell fallback used and every batch checked with `git diff --check`.
+- First partial Ruff run: 25 findings; all corrected. MyPy partial was green.
+- First full run: MyPy 4 test typing errors and Pytest 3 obsolete ST-01 expectations;
+  corrected without weakening shell/network/LLM prohibitions.
+- Additional edge-test run missed one import; corrected. Final gates are green.
+- CodeRabbit exit 1: WSL `/bin/sh: bash: not found`; manual DoD and independent QA
+  re-review completed with PASS.
+
+- QA fix debug: initial DDL/model replacement missed due line endings; a subsequent
+  regex fallback consumed capture markers and was explicitly restored. Final syntax,
+  Ruff, MyPy, Pytest, build, and CLI smoke all passed.
 
 ### Completion Notes
 
+- All 26 acceptance criteria addressed with real temporary SQLite tests.
+- 41 tests pass, including all 22 ST-01 tests and 19 ST-02 additions.
+- QA regressions prove deterministic event sequencing, APPROVED-only matching,
+  atomic rollback after projection mutation, and FK rejection of orphan events.
+- Real CLI lifecycle and clean-wheel bootstrap demonstrations passed.
+- No restore, physical delete, additional status, triage, UI, LLM, network, or
+  command-execution capability was introduced.
+
 ### Quality Gate Results
 
+- Ruff: exit 0, all checks passed.
+- MyPy strict: exit 0, no issues in 28 source files.
+- Pytest: exit 0, 41 passed in 1.23s.
+- Build: exit 0, sdist/wheel 0.2.0.
+- Clean install/smoke on CPython 3.12.12: exit 0.
+- Git diff check: exit 0.
+- DoD: all applicable items passed; no project coverage threshold exists.
+
 ### Evidence References
+
+- `docs/testing/evidence/ST-02.md`
+
+## QA Review Results
+
+- Verdict: **PASS**.
+- Acceptance criteria: **26/26 passed**.
+- Automated regression: **41/41 tests passed**.
+- Severity findings: **0 Critical, 0 High, 0 Medium**.
+- Confirmed regressions: deterministic event sequence, APPROVED-only matching,
+  atomic rollback after projection mutation, and orphan-event FK rejection.
+- Independent final gates: Ruff exit 0; MyPy exit 0 (28 files); Pytest exit 0;
+  real SQLite CLI lifecycle exit 0; `git diff --check` exit 0.
 
 ## Change Log
 
 | Date | Version | Description | Author |
 |---|---:|---|---|
+| 2026-08-01 | 0.2.0 | Development started (interactive mode) — Status: Ready → InProgress | @dev |
+| 2026-08-01 | 0.2.0 | Development complete — Status: InProgress → InReview | @dev |
+| 2026-08-01 | 0.2.1 | QA fixes started — Status: InReview → InProgress | @dev |
+| 2026-08-01 | 0.2.1 | QA blocking fixes complete — Status: InProgress → InReview | @dev |
+| 2026-08-01 | 0.2.1 | QA re-review PASS — Status: InReview → Done | @qa / @devops |
 
 ## File List
 
-Planned; replace with the actual created/modified file list during implementation.
-
-- `src/supportops/domain/**`
-- `src/supportops/persistence/**`
-- `src/supportops/repositories.py`
-- `src/supportops/lifecycle.py`
+- `.env.example`
+- `README.md`
+- `docs/architecture/contracts.md`
+- `docs/architecture/sqlite-schema.md`
+- `docs/pending.md`
+- `docs/progress.md`
+- `docs/stories/ST-02-sqlite-incident-lifecycle.md`
+- `docs/testing/evidence/ST-02.md`
+- `src/supportops/__init__.py`
 - `src/supportops/bootstrap.py`
 - `src/supportops/cli.py`
-- `tests/**`
-- `docs/architecture/**`
-- `docs/testing/evidence/ST-02.md`
-- `docs/progress.md`
-- `docs/pending.md`
-- `docs/stories/ST-02-sqlite-incident-lifecycle.md`
-
+- `src/supportops/config.py`
+- `src/supportops/domain/incidents.py`
+- `src/supportops/errors.py`
+- `src/supportops/lifecycle.py`
+- `src/supportops/persistence/__init__.py`
+- `src/supportops/persistence/database.py`
+- `src/supportops/persistence/migrations.py`
+- `src/supportops/repositories.py`
+- `tests/cli/test_cli.py`
+- `tests/cli/test_sqlite_cli.py`
+- `tests/integration/test_lifecycle.py`
+- `tests/integration/test_migrations.py`
+- `tests/security/test_prohibited_apis.py`
+- `tests/security/test_sqlite_safety.py`
+- `tests/smoke/test_startup.py`

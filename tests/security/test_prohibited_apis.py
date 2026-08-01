@@ -5,7 +5,6 @@ SOURCE_ROOT = Path(__file__).parents[2] / "src" / "supportops"
 PROHIBITED_CALLS = {"eval", "exec", "__import__"}
 PROHIBITED_OS_CALLS = {"system", "popen"}
 FORBIDDEN_IMPORT_ROOTS = {
-    "sqlite3",
     "streamlit",
     "ollama",
     "requests",

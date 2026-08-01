@@ -1,6 +1,6 @@
 # SQLite Schema Design
 
-Status: Proposed; no database or migration has been created.
+Status: ST-02 implemented subset; later tables remain proposed.
 
 ## Conventions
 
@@ -126,3 +126,10 @@ idempotently at CLI/Streamlit startup. Integration tests will use a real tempora
 SQLite file and verify foreign keys, constraints, rollback, locking behavior, and
 automatic creation. No executable SQL is part of Phase 2.
 
+
+
+## ST-02 implemented subset
+
+ST-02 implements only OPEN and CLOSED, with OPEN -> CLOSED and CLOSED -> OPEN. The broader conceptual states above remain unimplemented future design and must not be inferred as current behavior. Migrations are ordered Python artifacts with SHA-256 checksums and statement-by-statement explicit transactions; xecutescript is not used.
+
+The incident_events implementation uses a positive per-incident sequence with a unique constraint. The next value is calculated and inserted inside the same write transaction, and history orders by sequence rather than timestamps or opaque IDs.

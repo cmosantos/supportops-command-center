@@ -103,3 +103,8 @@ Configuration is validated at startup. Secrets are neither required for the base
 application nor accepted in incident models. `.env.example` contains placeholders
 only; a real `.env` is ignored by Git.
 
+
+
+## ST-02 implemented lifecycle contracts
+
+The current repository/UoW implementation exposes create, operational get/list, allowlisted optimistic update, close, reopen, soft delete, append-only history, and exact approval matching. Status is limited to OPEN/CLOSED. No restore, physical delete, or event/approval mutation contract exists.

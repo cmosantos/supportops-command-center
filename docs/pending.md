@@ -26,3 +26,10 @@ Phase 2 was approved. ST-01 is the only authorized Phase 3 increment. Increment 
 
 The Support Specialist 4x4 policy remains pending; ST-01 validates structure only and performs no classification.
 
+
+
+## After ST-02
+
+- The operational priority matrix and boundary cases remain pending; no triage exists.
+- Retention, restore, physical deletion, and audit export remain unavailable.
+- Streamlit, runbooks, LLM providers, network clients, and Increment 3 remain blocked pending approval.

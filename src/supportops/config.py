@@ -1,9 +1,10 @@
 """Validated local configuration."""
 
 from functools import lru_cache
+from pathlib import Path
 from typing import Literal
 
-from pydantic import ValidationError
+from pydantic import Field, ValidationError
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from supportops.errors import ConfigurationError
@@ -22,6 +23,8 @@ class Settings(BaseSettings):
     environment: Literal["local", "test"] = "local"
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     llm_enabled: Literal[False] = False
+    db_path: Path = Path("data/supportops.db")
+    db_busy_timeout_ms: int = Field(default=5000, ge=100, le=30000)
 
 
 def load_settings() -> Settings:

@@ -21,3 +21,33 @@ class DiagnosticError(SupportOpsError):
     """Raised when an in-process diagnostic check fails unexpectedly."""
 
     exit_code = 3
+
+
+class InputValidationError(SupportOpsError):
+    """Raised for invalid public input without echoing rejected values."""
+
+    exit_code = 2
+
+
+class NotFoundError(SupportOpsError):
+    """Raised when an operationally visible record is absent."""
+
+    exit_code = 4
+
+
+class ConflictError(SupportOpsError):
+    """Raised for optimistic concurrency conflicts."""
+
+    exit_code = 5
+
+
+class InvalidTransitionError(SupportOpsError):
+    """Raised when an incident lifecycle transition is not allowed."""
+
+    exit_code = 6
+
+
+class PersistenceError(SupportOpsError):
+    """Raised when persistence fails without exposing database details."""
+
+    exit_code = 7

@@ -39,10 +39,21 @@
 No functional application component is implemented or claimed complete.
 
 
-## Phase 3 — Increment 1 ready for QA
+## Phase 3 — Increment 1 approved
 
 - [x] ST-01 foundation, safe configuration, structural matrix contract, and CLI.
 - [x] Unit, contract, CLI, security, and smoke tests: 22 passed.
 - [x] Ruff, MyPy, build, clean wheel install, and CLI demonstrations passed.
 - [x] No SQLite, triage, Streamlit, runbook, Ollama, network, or shell capability.
-- [ ] Increment 2 remains blocked pending explicit human approval.
+- [x] Increment 1 approved by the user; Increment 2 subsequently authorized.
+
+## Phase 3 — Increment 2 complete
+
+- [x] Ordered checksummed SQLite bootstrap, status, FK, timeout, WAL, and UoW.
+- [x] OPEN/CLOSED incident lifecycle, optimistic updates, history, soft deletion.
+- [x] Exact-action approval records with declared, unauthenticated approver identity.
+- [x] CLI-first flows and real SQLite regression: 41 tests passing.
+- [x] QA re-review PASS: 26/26 acceptance criteria; zero Critical/High/Medium.
+- [ ] Increment 3 remains blocked pending explicit human approval and the Support Specialist matrix.
+
+- [x] ST-02 QA blockers fixed: deterministic event sequence, APPROVED-only matching, fault-injection atomic rollback, and FK orphan rejection; 41 tests pass.
