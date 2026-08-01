@@ -4,17 +4,37 @@ Local-first incident assistance for N1 and N2 support professionals.
 
 ## Current status
 
-Phase 2 — architecture only. No application functionality has been implemented.
+Phase 3, Increment 1 implements the Python 3.12 foundation and canonical CLI:
+validated settings, a validation-only 4x4 matrix contract, safe errors/redaction,
+a composition root, and offline diagnostics. Incidents, triage, SQLite, Streamlit,
+runbooks, Ollama, network clients, and command execution are not implemented.
 
-The approved product scope, architecture, domain model, SQLite design, contracts,
-ADRs, traceability matrix, implementation plan, progress, and pending decisions
-are under `docs/`.
+## Install and run
 
-## Governance boundaries
+```powershell
+uv venv --python 3.12 .venv
+uv sync --extra dev
+.\.venv\Scripts\supportops.exe version
+.\.venv\Scripts\supportops.exe config validate
+.\.venv\Scripts\supportops.exe doctor
+```
 
-- Everything for this product remains inside this directory.
-- CLI capabilities must precede Streamlit capabilities.
-- The application will suggest commands but will never execute them.
-- Ollama will be optional and disabled by default.
-- Implementation may begin only after explicit Phase 2 approval.
+Python must satisfy `>=3.12,<3.13`. Configuration is optional; copy
+`.env.example` to `.env` only for overrides. Variables use the `SUPPORTOPS_`
+prefix. LLM is disabled and cannot be enabled in this increment. Invalid values
+produce an actionable error without the rejected value or a stack trace.
 
+## Quality checks
+
+```powershell
+.\.venv\Scripts\python.exe -m ruff check .
+.\.venv\Scripts\python.exe -m mypy src tests
+.\.venv\Scripts\python.exe -m pytest -q
+.\.venv\Scripts\python.exe -m build
+```
+
+## Security boundaries
+
+The application has no shell, subprocess, administrative command, database,
+network, UI, or LLM adapter. `doctor` performs in-process checks only. `.env` is
+ignored, and examples contain no credentials.

@@ -1,0 +1,51 @@
+"""Validated local configuration."""
+
+from functools import lru_cache
+from typing import Literal
+
+from pydantic import ValidationError
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from supportops.errors import ConfigurationError
+
+
+class Settings(BaseSettings):
+    """Application settings with safe, offline defaults."""
+
+    model_config = SettingsConfigDict(
+        env_prefix="SUPPORTOPS_",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
+
+    environment: Literal["local", "test"] = "local"
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
+    llm_enabled: Literal[False] = False
+
+
+def load_settings() -> Settings:
+    """Load settings or raise an actionable error without rejected values."""
+
+    try:
+        return Settings()
+    except ValidationError as exc:
+        fields = sorted(
+            {
+                str(error["loc"][0])
+                for error in exc.errors(include_url=False, include_input=False)
+                if error["loc"]
+            }
+        )
+        field_text = ", ".join(fields) if fields else "unknown"
+        raise ConfigurationError(
+            "Invalid SupportOps configuration. Correct environment field(s): "
+            f"{field_text}. See .env.example."
+        ) from None
+
+
+@lru_cache(maxsize=1)
+def get_settings() -> Settings:
+    """Return one validated settings instance for the current process."""
+
+    return load_settings()

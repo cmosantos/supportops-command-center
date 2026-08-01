@@ -2,7 +2,7 @@
 
 ## Status
 
-**Ready**
+**InReview**
 
 ## Objective
 
@@ -68,17 +68,17 @@ dashboard, Docker, and every form of shell or external-command execution.
 
 ## Tasks
 
-- [ ] Confirm repository isolation, baseline, and ignore rules.
-- [ ] Create package metadata, Python 3.12 constraint, dependencies, and entry point.
-- [ ] Implement typed settings and safe configuration errors.
-- [ ] Implement Impact/Urgency/Priority and structural matrix validation only.
-- [ ] Implement safe error hierarchy and recursive logging redaction.
-- [ ] Implement minimal contracts, diagnostics, version provider, and composition root.
-- [ ] Implement `version`, `config validate`, and `doctor`.
-- [ ] Add unit, contract, CLI, security, and smoke tests.
-- [ ] Update README, progress, pending items, evidence, and File List.
-- [ ] Run all quality gates and fix every failure.
-- [ ] Complete DoD self-review and request QA review.
+- [x] Confirm repository isolation, baseline, and ignore rules.
+- [x] Create package metadata, Python 3.12 constraint, dependencies, and entry point.
+- [x] Implement typed settings and safe configuration errors.
+- [x] Implement Impact/Urgency/Priority and structural matrix validation only.
+- [x] Implement safe error hierarchy and recursive logging redaction.
+- [x] Implement minimal contracts, diagnostics, version provider, and composition root.
+- [x] Implement `version`, `config validate`, and `doctor`.
+- [x] Add unit, contract, CLI, security, and smoke tests.
+- [x] Update README, progress, pending items, evidence, and File List.
+- [x] Run all quality gates and fix every failure.
+- [x] Complete DoD self-review and request QA review.
 
 ## Planned tests
 
@@ -108,36 +108,89 @@ CLI uses standard-library argparse. No SQLite, Streamlit, HTTP, or LLM dependenc
 
 ### Agent
 
+@dev — Dex
+
 ### Model
+
+GPT-5 Codex
 
 ### Started At
 
+2026-08-01
+
 ### Completed At
+
+2026-08-01
 
 ### Implementation Notes
 
+- Python 3.12 package with one `supportops.__version__` source and argparse CLI.
+- Pydantic Settings uses `SUPPORTOPS_`; LLM is constrained to disabled.
+- Matrix is structural validation only: 16 unique enum pairs, no lookup/classifier.
+- Diagnostics are in-process and composed through typed protocols.
+- No SQLite, UI, LLM/network adapter, shell, subprocess, exec, or eval capability.
+
 ### Debug Log References
+
+- `apply_patch` intermittently failed with Windows `CreateProcessWithLogonW`; authorized localized PowerShell fallback used and checked with `git diff --check`.
+- Ruff first run: exit 1 (test asserts and two long lines); corrected without relaxing production rules.
+- MyPy first run: exit 1 (two test-only `_env_file` arguments); corrected.
+- CodeRabbit attempt: exit 1, `/bin/sh: bash: not found`; manual DoD/security review performed.
 
 ### Completion Notes
 
+- All 18 acceptance criteria addressed; 22 automated tests pass offline.
+- Wheel installed in a clean Python 3.12.12 environment and all CLI commands passed.
+- Invalid configuration exits 2 with an actionable, redacted public message.
+- Increment 2 and the operational priority matrix remain blocked for approval.
+
 ### Quality Gate Results
 
+- Ruff: exit 0, all checks passed.
+- MyPy strict: exit 0, no issues in 18 source files.
+- Pytest: exit 0, 22 passed in 0.25s final regression.
+- Build: exit 0, sdist and wheel created.
+- Clean wheel install and CLI demonstrations: exit 0.
+- Static prohibited-API/import scan: passed within Pytest.
+- DoD self-review: all applicable items passed; integration/coverage thresholds N/A for this foundation because no external integration or project threshold exists.
+
 ### Evidence References
+
+- `docs/testing/evidence/ST-01.md`
 
 ### Change Log
 
 | Date | Version | Change | Agent |
 |---|---|---|---|
+| 2026-08-01 | 0.1.0 | Development started (interactive mode) — Status: Ready → InProgress | @dev |
+| 2026-08-01 | 0.1.0 | Development complete — Status: InProgress → InReview | @dev |
 
 ## File List
 
-Planned; the development agent must replace this with the actual list.
-
-- `pyproject.toml`
-- `src/supportops/**`
-- `tests/**`
-- `README.md`
 - `.env.example`
+- `.gitignore`
+- `README.md`
+- `pyproject.toml`
+- `uv.lock`
+- `src/supportops/__init__.py`
+- `src/supportops/__main__.py`
+- `src/supportops/bootstrap.py`
+- `src/supportops/cli.py`
+- `src/supportops/config.py`
+- `src/supportops/contracts.py`
+- `src/supportops/errors.py`
+- `src/supportops/safe_logging.py`
+- `src/supportops/services.py`
+- `src/supportops/domain/__init__.py`
+- `src/supportops/domain/priority_matrix.py`
+- `tests/cli/test_cli.py`
+- `tests/contract/test_composition.py`
+- `tests/contract/test_priority_matrix.py`
+- `tests/security/test_prohibited_apis.py`
+- `tests/smoke/test_startup.py`
+- `tests/unit/test_config.py`
+- `tests/unit/test_safe_logging.py`
 - `docs/progress.md`
 - `docs/pending.md`
+- `docs/testing/evidence/ST-01.md`
 - `docs/stories/ST-01-foundation-configuration-cli.md`

@@ -22,6 +22,7 @@
 
 ## Gate
 
-No product functionality may be implemented until the user explicitly approves
-Phase 2.
+Phase 2 was approved. ST-01 is the only authorized Phase 3 increment. Increment 2, SQLite, triage, Streamlit, runbooks, and Ollama remain blocked pending new human approval.
+
+The Support Specialist 4x4 policy remains pending; ST-01 validates structure only and performs no classification.
 
