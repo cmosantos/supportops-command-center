@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import Protocol
 
 from supportops.domain.incidents import HumanApproval, Incident, IncidentEvent
+from supportops.domain.triage import TriageOutcome, TriageResult
 
 INCIDENT_COLUMNS = """id,title,description,affected_party,affected_service,impact,
 urgency,symptoms,error_messages_json,actions_taken_json,status,version,created_at,
@@ -30,6 +31,12 @@ class ApprovalRepositoryPort(Protocol):
     def matches(
         self, incident_id: str, action_id: str, action_version: int, action_digest: str
     ) -> bool: ...
+
+
+class TriageRepositoryPort(Protocol):
+    def add(self, result: TriageResult) -> TriageResult: ...
+    def list(self, incident_id: str) -> tuple[TriageResult, ...]: ...
+    def latest(self, incident_id: str) -> TriageResult | None: ...
 
 
 class SQLiteIncidentRepository:
@@ -234,3 +241,84 @@ class SQLiteApprovalRepository:
             (incident_id, action_id, action_version, action_digest),
         ).fetchone()
         return row is not None
+
+
+class SQLiteTriageRepository:
+    """Append-only adapter for immutable triage snapshots and questions."""
+
+    def __init__(self, connection: sqlite3.Connection) -> None:
+        self.connection = connection
+
+    def add(self, result: TriageResult) -> TriageResult:
+        sequence = self.connection.execute(
+            "SELECT COALESCE(MAX(sequence), 0) + 1 FROM triage_snapshots "
+            "WHERE incident_id = ?",
+            (result.incident_id,),
+        ).fetchone()[0]
+        stored = result.model_copy(update={"sequence": sequence})
+        input_snapshot = stored.normalized_input
+        self.connection.execute(
+            "INSERT INTO triage_snapshots("
+            "id,incident_id,sequence,policy_id,schema_version,matrix_version,"
+            "policy_checksum,input_snapshot_json,result_snapshot_json,outcome,"
+            "priority,recommended_route,escalation_required,missing_evidence_json,"
+            "questions_json,risk_signal_ids_json,stop_reason_ids_json,"
+            "escalation_reason_ids_json,created_at,created_by) "
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (
+                stored.snapshot_id,
+                stored.incident_id,
+                sequence,
+                stored.policy_id,
+                stored.schema_version,
+                stored.matrix_version,
+                stored.policy_checksum,
+                self._json(input_snapshot),
+                stored.model_dump_json(),
+                "COMPLETE"
+                if stored.outcome is TriageOutcome.COMPLETE
+                else "INCOMPLETE",
+                stored.priority.value if stored.priority else None,
+                stored.recommended_route.value if stored.recommended_route else None,
+                int(stored.escalation_required),
+                self._json(stored.missing_evidence),
+                self._json(
+                    [question.model_dump(mode="json") for question in stored.questions]
+                ),
+                self._json(input_snapshot.get("risk_signal_ids", [])),
+                self._json(stored.stop.reason_ids),
+                self._json(stored.escalation_reason_ids),
+                stored.generated_at.isoformat(),
+                stored.created_by,
+            ),
+        )
+        return stored
+
+    def list(self, incident_id: str) -> tuple[TriageResult, ...]:
+        found = self.connection.execute(
+            "SELECT result_snapshot_json FROM triage_snapshots "
+            "WHERE incident_id = ? ORDER BY sequence",
+            (incident_id,),
+        ).fetchall()
+        return tuple(
+            TriageResult.model_validate_json(row["result_snapshot_json"])
+            for row in found
+        )
+
+    def latest(self, incident_id: str) -> TriageResult | None:
+        row = self.connection.execute(
+            "SELECT result_snapshot_json FROM triage_snapshots "
+            "WHERE incident_id = ? ORDER BY sequence DESC LIMIT 1",
+            (incident_id,),
+        ).fetchone()
+        return (
+            TriageResult.model_validate_json(row["result_snapshot_json"])
+            if row
+            else None
+        )
+
+    @staticmethod
+    def _json(value: object) -> str:
+        return json.dumps(
+            value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        )

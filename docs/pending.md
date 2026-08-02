@@ -1,35 +1,27 @@
 # Pending Decisions and Work
 
-## Required before related implementation
+## Product and governance
 
-1. Support Specialist must publish the complete 4x4 impact/urgency matrix and
-   boundary cases consistent with the approved P1-P4 guidance.
-2. Product Owner must approve the canonical future story breakdown ST-01–ST-16.
-3. Security/Product must define a data-retention period; no retention/deletion job
-   is inferred in V1.
-4. Technical Writer/Support Specialist must define safe redaction guidance for
-   example incident data and runbooks.
+1. Security/Product must define a data-retention period. No automatic purge,
+   physical deletion or fictional retention policy exists in V1.
+2. Technical Writer/Support Specialist must define safe redaction guidance for
+   future example incident data and runbooks.
+3. The approved initial triage policy must be calibrated in a future authorized
+   increment using real operational data. Its conservative P2 concentration is a
+   V1 safety decision, not a universal ITSM standard.
+4. Governance is required before adding risk IDs, changing the 4x4 matrix or
+   changing escalation/stop destinations; configuration changes are fail-closed.
 
-## Architecture semantics resolved in Phase 2
+## Implemented constraints retained
 
-- Logically deleted incidents are excluded from normal lists, dashboard metrics,
-  and normal exports; preserved records are available only through an explicit
-  internal audit repository query. V1 exposes no restore or audit export UI.
-- Approver identity is a user-supplied reference, not authenticated identity. Each
-  decision binds to the exact action ID, version, digest, and snapshot.
-- Invalid/incomplete priority configuration fails startup closed with a safe error;
-  the system does not silently substitute hard-coded rules.
+- Logically deleted incidents remain outside operational lifecycle and triage.
+- Approver identity remains user-declared and unauthenticated.
+- Re-triage snapshots are append-only and have no update/delete application API.
+- Invalid triage policy configuration stops startup without a fallback.
+- Streamlit, runbook search, hypotheses, troubleshooting plans, LLM/network
+  providers, command execution, restore and physical deletion remain absent.
 
 ## Gate
 
-Phase 2 was approved. ST-01 is the only authorized Phase 3 increment. Increment 2, SQLite, triage, Streamlit, runbooks, and Ollama remain blocked pending new human approval.
-
-The Support Specialist 4x4 policy remains pending; ST-01 validates structure only and performs no classification.
-
-
-
-## After ST-02
-
-- The operational priority matrix and boundary cases remain pending; no triage exists.
-- Retention, restore, physical deletion, and audit export remain unavailable.
-- Streamlit, runbooks, LLM providers, network clients, and Increment 3 remain blocked pending approval.
+ST-03 implementation is in independent QA review. Increment 4 remains blocked
+until explicit human approval after the final ST-03 report.

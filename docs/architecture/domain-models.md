@@ -139,3 +139,17 @@ actionable configuration error. It never silently applies ad-hoc defaults. The
 initial complete matrix and boundary cases require Support Specialist approval
 before implementation.
 
+
+## ST-03 implemented triage models
+
+`TriageEvidence` is a strict structured input. Impact and urgency remain optional
+until supported; structured risk status is one of `not_assessed`,
+`none_identified`, `suspected`, or `confirmed`, with a closed six-ID catalog and
+validated status/ID pairing. Free text never changes risk status.
+
+`TriageResult` is an immutable complete or incomplete snapshot with policy ID,
+schema/matrix version, SHA-256 revision, normalized input, rule/rationale,
+priority, route, additive escalation reasons, missing evidence, ordered diagnostic
+questions, structured stop outcome, timestamp and declared actor. Incomplete
+results cannot carry fabricated priority or support route. Re-triage creates a new
+snapshot with the next sequence.

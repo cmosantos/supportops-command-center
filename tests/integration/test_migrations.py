@@ -18,17 +18,17 @@ def test_status_nonexistent_is_non_mutating_and_init_is_idempotent(
     path = tmp_path / "supportops.db"
     runner = MigrationRunner(factory(path))
 
-    assert runner.status() == (0, (1,))
+    assert runner.status() == (0, (1, 2))
     assert not path.exists()
-    assert runner.apply("2026-08-01T00:00:00+00:00") == 1
+    assert runner.apply("2026-08-01T00:00:00+00:00") == 2
     assert runner.apply("2026-08-01T00:00:01+00:00") == 0
-    assert runner.status() == (1, ())
+    assert runner.status() == (2, ())
 
     connection = factory(path).connect()
     try:
         assert (
             connection.execute("SELECT count(*) FROM schema_migrations").fetchone()[0]
-            == 1
+            == 2
         )
         assert connection.execute("PRAGMA foreign_keys").fetchone()[0] == 1
         assert connection.execute("PRAGMA busy_timeout").fetchone()[0] == 200
@@ -108,5 +108,26 @@ def test_foreign_key_rejects_orphan_event_and_rolls_back(tmp_path: Path) -> None
             connection.execute("SELECT count(*) FROM incident_events").fetchone()[0]
             == 0
         )
+    finally:
+        connection.close()
+
+
+def test_existing_v1_database_receives_only_v2_in_order(tmp_path: Path) -> None:
+    path = tmp_path / "upgrade.db"
+    first_only = MigrationRunner(factory(path), (MIGRATIONS[0],))
+    assert first_only.apply("2026-08-01T00:00:00+00:00") == 1
+    assert first_only.status() == (1, ())
+
+    full = MigrationRunner(factory(path))
+    assert full.status() == (1, (2,))
+    assert full.apply("2026-08-01T00:00:01+00:00") == 1
+    assert full.status() == (2, ())
+
+    connection = factory(path).connect()
+    try:
+        assert connection.execute(
+            "SELECT 1 FROM sqlite_master WHERE type = ? AND name = ?",
+            ("table", "triage_snapshots"),
+        ).fetchone()
     finally:
         connection.close()

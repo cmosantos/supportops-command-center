@@ -130,6 +130,23 @@ automatic creation. No executable SQL is part of Phase 2.
 
 ## ST-02 implemented subset
 
-ST-02 implements only OPEN and CLOSED, with OPEN -> CLOSED and CLOSED -> OPEN. The broader conceptual states above remain unimplemented future design and must not be inferred as current behavior. Migrations are ordered Python artifacts with SHA-256 checksums and statement-by-statement explicit transactions; xecutescript is not used.
+ST-02 implements only OPEN and CLOSED, with OPEN -> CLOSED and CLOSED -> OPEN. The broader conceptual states above remain unimplemented future design and must not be inferred as current behavior. Migrations are ordered Python artifacts with SHA-256 checksums and statement-by-statement explicit transactions; executescript is not used.
 
 The incident_events implementation uses a positive per-incident sequence with a unique constraint. The next value is calculated and inserted inside the same write transaction, and history orders by sequence rather than timestamps or opaque IDs.
+
+## ST-03 implemented subset
+
+Migration 2 creates `triage_snapshots` with:
+
+- opaque snapshot ID and incident FK with `ON DELETE RESTRICT`;
+- positive `sequence` unique per incident;
+- policy/schema/matrix versions and a 64-character policy checksum;
+- JSON-valid input, full result, missing evidence, questions, risk, stop and
+  escalation reason snapshots;
+- constrained complete/incomplete outcome, priority, route and escalation flag;
+- UTC creation timestamp and optional declared actor.
+
+A complete row requires priority and route; an incomplete row requires both to be
+NULL. Sequence is calculated with `MAX(sequence)+1` inside `BEGIN IMMEDIATE`.
+The repository exposes insert/list/latest only and orders by sequence. The result
+and all questions are inserted atomically; injected failures roll back the row.

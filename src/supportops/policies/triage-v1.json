@@ -1,0 +1,79 @@
+{
+  "policy_id": "supportops-triage",
+  "schema_version": "1",
+  "matrix_version": "2026.08-v1",
+  "effective_date": "2026-08-01",
+  "fallback_behavior": "fail_closed",
+  "allowed_impacts": ["low", "moderate", "high", "critical"],
+  "allowed_urgencies": ["low", "moderate", "high", "critical"],
+  "allowed_priorities": ["P1", "P2", "P3", "P4"],
+  "route_order": ["N1", "N2", "incident_coordination"],
+  "v1_conservative_note": "The P2 concentration is a conservative V1 decision and is not a universal ITSM standard.",
+  "impact_required_fields": {
+    "low": ["affected_scope", "scope_source", "affected_process", "workaround_status", "workaround_validation"],
+    "moderate": ["affected_scope", "scope_source", "affected_process", "business_consequence", "workaround_status"],
+    "high": ["affected_scope", "scope_source", "affected_process", "business_consequence", "workaround_status"],
+    "critical": ["affected_scope", "scope_source", "affected_process", "business_consequence", "containment_status"]
+  },
+  "urgency_required_fields": {
+    "low": ["workaround_status", "workaround_validation", "deadline", "condition_stability"],
+    "moderate": ["failure_frequency", "business_consequence", "deadline", "trend"],
+    "high": ["deadline", "deadline_owner", "delay_consequence", "time_to_harm", "workaround_status"],
+    "critical": ["business_consequence", "containment_status", "workaround_status", "time_to_harm"]
+  },
+  "matrix_rules": [
+    {"rule_id":"MX-LL","impact":"low","urgency":"low","priority":"P4","rationale":"Isolated, stable and safely deferrable.","baseline_route":"N1"},
+    {"rule_id":"MX-LM","impact":"low","urgency":"moderate","priority":"P3","rationale":"Limited reach with recurring operational cost.","baseline_route":"N1"},
+    {"rule_id":"MX-LH","impact":"low","urgency":"high","priority":"P2","rationale":"Small scope with near-term material pressure.","baseline_route":"N1"},
+    {"rule_id":"MX-LC","impact":"low","urgency":"critical","priority":"P2","rationale":"Immediate action with limited confirmed consequence.","baseline_route":"N2"},
+    {"rule_id":"MX-ML","impact":"moderate","urgency":"low","priority":"P3","rationale":"Team-level impact is stable and schedulable.","baseline_route":"N1"},
+    {"rule_id":"MX-MM","impact":"moderate","urgency":"moderate","priority":"P3","rationale":"Moderate reach and accumulating burden.","baseline_route":"N1"},
+    {"rule_id":"MX-MH","impact":"moderate","urgency":"high","priority":"P2","rationale":"Affected function faces disruption within hours.","baseline_route":"N2"},
+    {"rule_id":"MX-MC","impact":"moderate","urgency":"critical","priority":"P2","rationale":"Immediate harm without confirmed critical impact.","baseline_route":"N2"},
+    {"rule_id":"MX-HL","impact":"high","urgency":"low","priority":"P2","rationale":"Broad impact requires elevated coordination.","baseline_route":"N2"},
+    {"rule_id":"MX-HM","impact":"high","urgency":"moderate","priority":"P2","rationale":"Significant scope with accumulating degradation.","baseline_route":"N2"},
+    {"rule_id":"MX-HH","impact":"high","urgency":"high","priority":"P2","rationale":"Serious scope and near-term harm below P1 boundary.","baseline_route":"N2"},
+    {"rule_id":"MX-HC","impact":"high","urgency":"critical","priority":"P2","rationale":"Immediate harm with high but not critical impact.","baseline_route":"N2","boundary_required_fields":["critical_impact_reassessment"],"boundary_question_ids":["DQ-01"],"stop_rule_ids":["STOP-03"]},
+    {"rule_id":"MX-CL","impact":"critical","urgency":"low","priority":"P2","rationale":"Critical consequence is contained and stable.","baseline_route":"N2"},
+    {"rule_id":"MX-CM","impact":"critical","urgency":"moderate","priority":"P2","rationale":"Critical impact is contained during coordinated recovery.","baseline_route":"N2"},
+    {"rule_id":"MX-CH","impact":"critical","urgency":"high","priority":"P2","rationale":"Critical scope with near-term, not immediate, harm.","baseline_route":"N2"},
+    {"rule_id":"MX-CC","impact":"critical","urgency":"critical","priority":"P1","rationale":"Critical consequence and immediate harm coincide.","baseline_route":"incident_coordination","stop_rule_ids":["STOP-02"]}
+  ],
+  "escalation_rules": [
+    {"rule_id":"ESC-01","destination":"incident_coordination","description":"Priority P1."},
+    {"rule_id":"ESC-02","destination":"N2","description":"High/critical impact or critical urgency."},
+    {"rule_id":"ESC-03","destination":"incident_coordination","description":"Suspected or confirmed catalog risk."},
+    {"rule_id":"ESC-04","destination":"N2","description":"Administrative, configuration or ownership boundary."},
+    {"rule_id":"ESC-05","destination":"incident_coordination","description":"Multiple scopes or external resolver ownership."},
+    {"rule_id":"ESC-06","destination":"N2","description":"N1 exhausted, conflicting evidence, uncertain cause or recurrence."}
+  ],
+  "conditional_escalation": {
+    "MX-LH": "N2",
+    "MX-MM": "N2",
+    "MX-MH": "incident_coordination"
+  },
+  "risk_signal_ids": ["security_compromise", "credential_exposure", "safety_hazard", "privacy_exposure", "regulatory_exposure", "data_integrity_loss"],
+  "questions": [
+    {"question_id":"DQ-01","topic":"scope","question":"Quantas pessoas, dispositivos, equipes e localidades estão afetados? Como essa estimativa foi obtida?","required_evidence":"Population, scope and source.","reason":"Impact scope is absent or conflicting.","blocking":true},
+    {"question_id":"DQ-02","topic":"service_process","question":"Qual serviço, função e processo de negócio estão afetados? O processo é crítico?","required_evidence":"Service, function and process criticality.","reason":"Affected process or criticality is unsupported.","blocking":true},
+    {"question_id":"DQ-03","topic":"workaround","question":"Existe contorno? Ele foi testado, preserva a tarefa essencial e por quanto tempo suporta a operação?","required_evidence":"Workaround availability, validation and capacity.","reason":"Impact or urgency depends on workaround viability.","blocking":true},
+    {"question_id":"DQ-04","topic":"deadline","question":"Qual é o prazo ou janela operacional relevante, quem o confirmou e qual é a consequência concreta do atraso?","required_evidence":"Deadline, owner, consequence and time-to-harm.","reason":"Urgency evidence is incomplete.","blocking":true},
+    {"question_id":"DQ-05","topic":"timeline","question":"Quando começou, a falha é contínua ou intermitente e está estável, melhorando ou piorando?","required_evidence":"Timeline, frequency and trend.","reason":"Time-to-harm or recurrence is unknown.","blocking":false},
+    {"question_id":"DQ-06","topic":"symptoms","question":"Quais sintomas e mensagens de erro exatas foram observados, em que horário e em qual sistema?","required_evidence":"Timestamped symptom and error context.","reason":"Symptom context is absent or inconsistent.","blocking":false},
+    {"question_id":"DQ-07","topic":"prior_actions","question":"Quais ações já foram realizadas, por quem, em que ordem e com qual resultado?","required_evidence":"Prior-action audit and outcomes.","reason":"Prior actions are unknown or risky.","blocking":false},
+    {"question_id":"DQ-08","topic":"recent_change","question":"Houve mudança recente de conta, permissão, dispositivo, rede, aplicação ou configuração?","required_evidence":"Change correlation.","reason":"Cause or recent-change status is unknown.","blocking":false},
+    {"question_id":"DQ-09","topic":"corroboration","question":"Há alerta oficial, incidente correlato ou outros chamados do mesmo serviço?","required_evidence":"Corroboration and major-incident scope.","reason":"Broad impact lacks corroboration.","blocking":false},
+    {"question_id":"DQ-10","topic":"risk","question":"Selecione o estado da avaliação de risco e, para suspeita ou confirmação, os IDs aplicáveis do catálogo fechado.","required_evidence":"Structured risk status and catalog IDs.","reason":"Risk was not assessed.","blocking":true},
+    {"question_id":"DQ-11","topic":"privilege_boundary","question":"A coleta exige privilégio administrativo, alteração de configuração ou acesso fora da responsabilidade do N1?","required_evidence":"Privilege, change and ownership boundary.","reason":"The next verification boundary is unknown.","blocking":false},
+    {"question_id":"DQ-12","topic":"safe_reproduction","question":"O problema pode ser reproduzido com segurança? Em caso afirmativo, quais são os passos e o resultado esperado?","required_evidence":"Safe reproduction and expected behavior.","reason":"A controlled test lacks safe reproduction criteria.","blocking":false}
+  ],
+  "stop_rules": [
+    {"rule_id":"STOP-01","destination":"incident_coordination","description":"Structured suspected or confirmed risk."},
+    {"rule_id":"STOP-02","destination":"N2","description":"Next step is destructive, administrative, configuration-changing, outside runbook or unapproved."},
+    {"rule_id":"STOP-03","destination":"incident_coordination","description":"Scope or urgency is increasing."},
+    {"rule_id":"STOP-04","destination":"N2","description":"Evidence is contradictory or insufficient for a safe next step."},
+    {"rule_id":"STOP-05","destination":"N2","description":"Controlled attempts failed or retry can compound impact."},
+    {"rule_id":"STOP-06","destination":"N2","description":"Ownership, authorization, maintenance, rollback or recovery is unknown."},
+    {"rule_id":"STOP-07","destination":"incident_coordination","description":"Vendor boundary or major incident procedure applies."}
+  ]
+}

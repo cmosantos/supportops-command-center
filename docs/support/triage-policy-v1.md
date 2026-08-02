@@ -1,14 +1,15 @@
 # SupportOps deterministic triage policy
 
-Status: Proposed for ST-03 approval
+Status: Approved initial V1 and implemented by ST-03
 Policy ID: `supportops-triage`
 Schema version: `1`
-Matrix version: `2026.08-v1-draft`
+Matrix version: `2026.08-v1`
 Owner: Support Specialist N1/N2
 
-This document is the operational source of truth proposed for Increment 3. It is
-documentation only: no classification, persistence, CLI, or migration behavior is
-implemented by this preparation.
+This document is the operational source of truth implemented by Increment 3. It
+remains an initial V1 subject to future calibration with real operational data.
+The conservative concentration of cells in P2 is a deliberate V1 safety decision,
+not a universal ITSM standard.
 
 ## Purpose and invariants
 

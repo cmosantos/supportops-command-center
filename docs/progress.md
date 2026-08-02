@@ -54,6 +54,17 @@ No functional application component is implemented or claimed complete.
 - [x] Exact-action approval records with declared, unauthenticated approver identity.
 - [x] CLI-first flows and real SQLite regression: 41 tests passing.
 - [x] QA re-review PASS: 26/26 acceptance criteria; zero Critical/High/Medium.
-- [ ] Increment 3 remains blocked pending explicit human approval and the Support Specialist matrix.
+- [x] Increment 3 policy/story preparation approved; implementation authorized.
 
 - [x] ST-02 QA blockers fixed: deterministic event sequence, APPROVED-only matching, fault-injection atomic rollback, and FK orphan rejection; 41 tests pass.
+## Phase 3 — Increment 3 in review
+
+- [x] Approved initial V1 policy packaged and validated fail-closed.
+- [x] All 16 matrix cells, priority invariants and deterministic routing implemented.
+- [x] DQ-01..12, closed risk catalog and STOP-01..07 implemented.
+- [x] Migration 2 and immutable append-only triage snapshots implemented.
+- [x] CLI-first `triage run/history` human and JSON flows implemented.
+- [x] ST-01/ST-02 baseline preserved in the full regression suite.
+- [x] Ruff, strict MyPy and 150-test development gate passed.
+- [ ] Independent QA verdict and final evidence remain required before Done.
+- [ ] Increment 4 is not authorized and has not started.

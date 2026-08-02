@@ -108,3 +108,17 @@ only; a real `.env` is ignored by Git.
 ## ST-02 implemented lifecycle contracts
 
 The current repository/UoW implementation exposes create, operational get/list, allowlisted optimistic update, close, reopen, soft delete, append-only history, and exact approval matching. Status is limited to OPEN/CLOSED. No restore, physical delete, or event/approval mutation contract exists.
+
+## ST-03 implemented triage contracts
+
+`TriageService.triage(incident_id, evidence, actor)` validates one typed evidence
+object, evaluates the exact loaded `TriagePolicy`, and appends a `TriageResult`
+inside one SQLite Unit of Work. `history` returns immutable snapshots ordered by
+per-incident sequence. Unknown or logically deleted incidents use the existing
+safe not-found contract.
+
+`TriagePolicy` is loaded once by the composition root. The project-owned JSON
+must declare the exact schema, matrix, routes, escalation rules, questions, risk
+catalog and stop rules. Validation is fail-closed; there is no embedded fallback.
+The CLI exposes `triage run` and `triage history`, contains no SQL or policy rule,
+and offers human or JSON presentation.

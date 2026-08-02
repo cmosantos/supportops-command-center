@@ -77,6 +77,38 @@ MIGRATIONS = (
             "CREATE INDEX ix_approvals_exact ON human_approvals(incident_id, action_id, action_version, action_digest)",
         ),
     ),
+    Migration(
+        2,
+        "immutable deterministic triage snapshots",
+        (
+            """CREATE TABLE triage_snapshots (
+                id TEXT PRIMARY KEY,
+                incident_id TEXT NOT NULL REFERENCES incidents(id) ON DELETE RESTRICT,
+                sequence INTEGER NOT NULL CHECK (sequence > 0),
+                policy_id TEXT NOT NULL,
+                schema_version TEXT NOT NULL,
+                matrix_version TEXT NOT NULL,
+                policy_checksum TEXT NOT NULL CHECK (length(policy_checksum) = 64),
+                input_snapshot_json TEXT NOT NULL CHECK (json_valid(input_snapshot_json)),
+                result_snapshot_json TEXT NOT NULL CHECK (json_valid(result_snapshot_json)),
+                outcome TEXT NOT NULL CHECK (outcome IN ('COMPLETE','INCOMPLETE')),
+                priority TEXT CHECK (priority IN ('P1','P2','P3','P4')),
+                recommended_route TEXT CHECK (recommended_route IN ('N1','N2','incident_coordination')),
+                escalation_required INTEGER NOT NULL CHECK (escalation_required IN (0,1)),
+                missing_evidence_json TEXT NOT NULL CHECK (json_valid(missing_evidence_json)),
+                questions_json TEXT NOT NULL CHECK (json_valid(questions_json)),
+                risk_signal_ids_json TEXT NOT NULL CHECK (json_valid(risk_signal_ids_json)),
+                stop_reason_ids_json TEXT NOT NULL CHECK (json_valid(stop_reason_ids_json)),
+                escalation_reason_ids_json TEXT NOT NULL CHECK (json_valid(escalation_reason_ids_json)),
+                created_at TEXT NOT NULL,
+                created_by TEXT,
+                UNIQUE (incident_id, sequence),
+                CHECK ((outcome = 'COMPLETE' AND priority IS NOT NULL AND recommended_route IS NOT NULL)
+                    OR (outcome = 'INCOMPLETE' AND priority IS NULL AND recommended_route IS NULL))
+            )""",
+            "CREATE INDEX ix_triage_incident_sequence ON triage_snapshots(incident_id, sequence)",
+        ),
+    ),
 )
 
 

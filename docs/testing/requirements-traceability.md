@@ -32,3 +32,16 @@ reported as passing in Phase 2.
 4. Real-Ollama smoke is optional and must be labeled optional.
 5. Test outcomes include command, date, environment, exit code, and counts.
 
+
+## ST-03 implemented traceability
+
+| Requirement / AC group | Story | Implemented evidence |
+|---|---|---|
+| Versioned fail-closed policy and exact 4x4 matrix | ST-03 AC 1-9 | `T3-CFG-*`, `T3-MX-01..16`, `T3-PRI-*`, `T3-IMP-*`, `T3-URG-*` |
+| Routing, escalation and N1/N2 recommendation | ST-03 AC 10-14 | `T3-ESC-*`, `T3-LVL-*` |
+| DQ-01..12, gaps and structured risk | ST-03 AC 15-18 | `T3-DQ-01..12`, `T3-RISK-*`, `T3-GAP-*` |
+| STOP-01..07 and no side effects | ST-03 AC 19-20 | `T3-STOP-01..09`, real SQLite no-lifecycle/no-approval assertion |
+| CLI human/JSON and hidden incidents | ST-03 AC 21-23 | `T3-CLI-01..04` |
+| Atomic immutable persistence and re-triage | ST-03 AC 24-26 | `T3-INT-01..02`, v1→v2 migration, FK orphan and fault rollback |
+| Hostile input, redaction and prohibited capabilities | ST-03 AC 27-29 | `T3-SEC-01..03`, AST and CLI canary tests |
+| Full gates and isolation | ST-03 AC 30-31 | Ruff, MyPy, Pytest, build/wheel, CLI smoke and Git evidence in `docs/testing/evidence/ST-03.md` |

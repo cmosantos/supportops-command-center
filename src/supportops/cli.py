@@ -11,6 +11,7 @@ from pydantic import ValidationError
 
 from supportops.bootstrap import Application, build_application
 from supportops.domain.incidents import ApprovalInput, IncidentCreate, IncidentUpdate
+from supportops.domain.triage import TriageEvidence, TriageResult
 from supportops.errors import InputValidationError, SupportOpsError
 
 GENERIC_ERROR = "SupportOps could not complete the request safely."
@@ -72,6 +73,17 @@ def build_parser() -> argparse.ArgumentParser:
     history = incident_commands.add_parser("history")
     history.add_argument("incident_id")
 
+    triage = commands.add_parser("triage", help="deterministic incident triage")
+    triage_commands = triage.add_subparsers(dest="triage_command", required=True)
+    triage_run = triage_commands.add_parser("run")
+    triage_run.add_argument("incident_id")
+    triage_run.add_argument("--evidence-json", required=True)
+    triage_run.add_argument("--actor")
+    triage_run.add_argument("--format", choices=("human", "json"), default="human")
+    triage_history = triage_commands.add_parser("history")
+    triage_history.add_argument("incident_id")
+    triage_history.add_argument("--format", choices=("human", "json"), default="human")
+
     approval = commands.add_parser("approval", help="record human decisions")
     approval_commands = approval.add_subparsers(dest="approval_command", required=True)
     record = approval_commands.add_parser("record")
@@ -112,6 +124,8 @@ def dispatch(args: argparse.Namespace, application: Application) -> int:
             print(f"Current migration: {current}; pending: {pending_text}.")
     elif args.command == "incident":
         return _dispatch_incident(args, application)
+    elif args.command == "triage":
+        return _dispatch_triage(args, application)
     elif args.command == "approval":
         snapshot = json.loads(args.action_snapshot)
         if not isinstance(snapshot, dict):
@@ -189,6 +203,82 @@ def _dispatch_incident(args: argparse.Namespace, application: Application) -> in
             )
         )
     return 0
+
+
+def _dispatch_triage(args: argparse.Namespace, application: Application) -> int:
+    service = application.triage_service
+    if args.triage_command == "run":
+        payload = json.loads(args.evidence_json)
+        if not isinstance(payload, dict):
+            raise InputValidationError("Triage evidence must be a JSON object.")
+        result = service.triage(
+            args.incident_id,
+            TriageEvidence.model_validate(payload),
+            args.actor,
+        )
+        _print_triage_result(result, args.format)
+    else:
+        history = service.history(args.incident_id)
+        if args.format == "json":
+            print(
+                json.dumps(
+                    [item.model_dump(mode="json") for item in history],
+                    ensure_ascii=False,
+                )
+            )
+        else:
+            for item in history:
+                print(
+                    f"sequence={item.sequence} outcome={item.outcome.value} "
+                    f"priority={item.priority.value if item.priority else 'none'} "
+                    f"rule={item.rule_id or 'none'} revision={item.policy_checksum}"
+                )
+    return 0
+
+
+def _print_triage_result(result: TriageResult, output_format: str) -> None:
+    question_payload = [
+        question.model_dump(mode="json") for question in result.questions
+    ]
+    if output_format == "json":
+        result_payload = result.model_dump(mode="json", exclude={"questions"})
+        print(
+            json.dumps(
+                {
+                    "questions": question_payload,
+                    "outcome": result.outcome.value,
+                    "result": result_payload,
+                },
+                ensure_ascii=False,
+            )
+        )
+        return
+    print(f"outcome: {result.outcome.value}")
+    print("questions:")
+    if not result.questions:
+        print("- none")
+    for question in result.questions:
+        marker = "BLOCKING" if question.blocking else "OPTIONAL"
+        print(f"- [{marker}] {question.question_id}: {question.question}")
+    print("classification:")
+    print(f"- policy: {result.policy_id}/{result.matrix_version}")
+    print(f"- revision: {result.policy_checksum}")
+    print(f"- rule: {result.rule_id or 'none'}")
+    print(f"- priority: {result.priority.value if result.priority else 'none'}")
+    print(
+        "- route: "
+        f"{result.recommended_route.value if result.recommended_route else 'none'}"
+    )
+    print(
+        "- escalation: "
+        f"{'yes' if result.escalation_required else 'no'} "
+        f"({','.join(result.escalation_reason_ids) or 'none'})"
+    )
+    print(
+        "- stop: "
+        f"{'yes' if result.stop.required else 'no'} "
+        f"({','.join(result.stop.reason_ids) or 'none'})"
+    )
 
 
 def main(argv: Sequence[str] | None = None) -> int:

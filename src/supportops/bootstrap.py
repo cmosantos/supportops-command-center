@@ -7,6 +7,8 @@ from supportops.contracts import DiagnosticsProvider, VersionProvider
 from supportops.lifecycle import IncidentService
 from supportops.persistence.database import ConnectionFactory, MigrationRunner
 from supportops.services import InProcessDiagnosticsProvider, PackageVersionProvider
+from supportops.triage_policy import load_triage_policy
+from supportops.triage_service import TriageService
 
 
 @dataclass(frozen=True, slots=True)
@@ -16,6 +18,7 @@ class Application:
     diagnostics_provider: DiagnosticsProvider
     migration_runner: MigrationRunner
     incident_service: IncidentService
+    triage_service: TriageService
 
 
 def build_application() -> Application:
@@ -23,10 +26,12 @@ def build_application() -> Application:
 
     settings = get_settings()
     factory = ConnectionFactory(settings.db_path, settings.db_busy_timeout_ms)
+    policy = load_triage_policy(settings.triage_policy_path)
     return Application(
         settings=settings,
         version_provider=PackageVersionProvider(),
         diagnostics_provider=InProcessDiagnosticsProvider(),
         migration_runner=MigrationRunner(factory),
         incident_service=IncidentService(factory),
+        triage_service=TriageService(factory, policy),
     )

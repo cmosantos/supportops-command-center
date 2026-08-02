@@ -4,10 +4,12 @@ Local-first incident assistance for N1 and N2 support professionals.
 
 ## Current status
 
-Phase 3, Increment 2 provides the Python 3.12 foundation plus SQLite incident
-lifecycle through the canonical CLI. The implemented state machine is strictly
-`OPEN ↔ CLOSED`. Triaging, runbooks, Streamlit, LLM/network providers, exports,
-dashboard, restore, physical deletion, and command execution remain absent.
+Phase 3, Increment 3 provides the Python 3.12 foundation, SQLite incident
+lifecycle, and deterministic evidence-based triage through the canonical CLI.
+The lifecycle remains strictly `OPEN ↔ CLOSED`. Triage uses the approved initial
+V1 policy and is subject to future calibration with operational data. Runbooks,
+Streamlit, LLM/network providers, exports, dashboard, restore, physical deletion,
+and command execution remain absent.
 
 ## Install
 
@@ -41,6 +43,25 @@ Deletion is logical, irreversible in V1, and excluded from operational queries.
 There is no restore or physical-delete command. Approval identity is user-declared
 and not authenticated; approval only records exact action metadata and never
 executes the action.
+
+## CLI deterministic triage
+
+Initialize the database and create an incident first. Triage accepts one JSON
+object of structured evidence; free text never creates a risk signal. Use
+`--format json` for machine-readable output.
+
+```powershell
+$evidence = '{"impact":"high","urgency":"high","supported_impact_criteria":["high"],"supported_urgency_criteria":["high"],"affected_scope":"Finance department","scope_source":"multiple tickets","affected_process":"shift processing","process_criticality":"important","workaround_status":"limited","workaround_validation":"tested","business_consequence":"significant delay","containment_status":"stable scope","critical_impact_reassessment":"critical expansion not supported","deadline":"current shift","deadline_owner":"finance lead","delay_consequence":"cutoff missed","time_to_harm":"within hours","condition_stability":"stable","failure_frequency":"continuous","trend":"stable","symptom_context":"timestamped timeout","prior_actions":"read-only checks","recent_change":"none","corroboration":"multiple tickets","risk_assessment_status":"none_identified","requires_admin_or_change":false,"within_approved_runbook_or_noninvasive":true,"n1_safe_boundary":true,"expected_result_defined":true,"stop_condition_defined":true}'
+.\.venv\Scripts\supportops.exe triage run INCIDENT_ID --evidence-json $evidence
+.\.venv\Scripts\supportops.exe triage run INCIDENT_ID --evidence-json $evidence --format json
+.\.venv\Scripts\supportops.exe triage history INCIDENT_ID --format json
+```
+
+The default packaged policy is `supportops-triage`, schema `1`, matrix
+`2026.08-v1`. A project-owned override may be selected with
+`SUPPORTOPS_TRIAGE_POLICY_PATH`; invalid, incomplete, unsupported, or unreadable
+policy configuration stops startup and never activates a fallback. Re-triage
+appends a new immutable snapshot and never overwrites prior results.
 
 ## Quality checks
 

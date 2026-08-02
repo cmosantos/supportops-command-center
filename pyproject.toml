@@ -27,6 +27,9 @@ supportops = "supportops.cli:main"
 [tool.setuptools.dynamic]
 version = {attr = "supportops.__version__"}
 
+[tool.setuptools.package-data]
+supportops = ["policies/*.json"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 

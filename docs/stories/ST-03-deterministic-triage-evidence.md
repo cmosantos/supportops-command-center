@@ -2,9 +2,20 @@
 
 ## Status
 
-**Draft**
+**Done**
 
-Implementation remains blocked until ST-03 and Increment 3 receive explicit human approval.
+Explicit human approval for ST-03 and Increment 3 was received on 2026-08-01.
+Implementation is complete and the story is in independent QA review. Increment 4
+remains unauthorized and has not started.
+
+### Approval Evidence
+
+- Approved by: project user through the active AIOX orchestration.
+- Approved scope: ST-03 deterministic triage and evidence collection as written.
+- Transition: `Draft → Ready`.
+- Date: 2026-08-01.
+- Boundary preserved: documentation-only transition; no code, commit, remote or
+  push operation authorized by this record.
 
 ## Objective
 
@@ -113,19 +124,20 @@ quality_gate_tools: [Ruff, MyPy, Pytest, manual-security-review]
 
 ## Tasks
 
-- [ ] Record explicit approval before implementation. (AC: 31)
-- [ ] Add and validate the project-owned policy with matrix, escalation, gap and stop rules. (AC: 1-4)
-- [ ] Extend typed domain contracts for evidence, immutable result/question, escalation and stop outcomes. (AC: 5-20, 29)
-- [ ] Implement deterministic policy loading/evaluation without fallback. (AC: 3-20)
-- [ ] Add an ordered checksummed SQLite migration for immutable snapshots/questions. (AC: 24-26)
-- [ ] Implement analysis repositories and transactional services; reject deleted/unknown incidents and append re-triage. (AC: 23-26)
-- [ ] Extend composition root and CLI; keep SQL/domain decisions out of CLI. (AC: 18, 21-23)
-- [ ] Implement canonical `T3-CFG`, `T3-IMP`, `T3-URG`, `T3-MX`, `T3-PRI`, `T3-ESC` and `T3-LVL` tests. (AC: 1-14)
-- [ ] Implement `T3-DQ`, `T3-RISK`, `T3-GAP` and `T3-STOP` tests. (AC: 15-20)
-- [ ] Add real-SQLite round-trip, append-only, FK and fault-rollback tests. (AC: 23-26)
-- [ ] Add CLI, hostile input, redaction, offline/prohibited capability and full regression tests. (AC: 21-30)
-- [ ] Update README, architecture subset notes, traceability, progress, pending, evidence and actual File List. (AC: 30-31)
-- [ ] Run all gates, fix failures and request independent QA before Done. (AC: 30-31)
+- [x] Record explicit approval before implementation. (AC: 31)
+- [x] Add and validate the project-owned policy with matrix, escalation, gap and stop rules. (AC: 1-4)
+- [x] Extend typed domain contracts for evidence, immutable result/question, escalation and stop outcomes. (AC: 5-20, 29)
+- [x] Implement deterministic policy loading/evaluation without fallback. (AC: 3-20)
+- [x] Add an ordered checksummed SQLite migration for immutable snapshots/questions. (AC: 24-26)
+- [x] Implement analysis repositories and transactional services; reject deleted/unknown incidents and append re-triage. (AC: 23-26)
+- [x] Extend composition root and CLI; keep SQL/domain decisions out of CLI. (AC: 18, 21-23)
+- [x] Implement canonical `T3-CFG`, `T3-IMP`, `T3-URG`, `T3-MX`, `T3-PRI`, `T3-ESC` and `T3-LVL` tests. (AC: 1-14)
+- [x] Implement `T3-DQ`, `T3-RISK`, `T3-GAP` and `T3-STOP` tests. (AC: 15-20)
+- [x] Add real-SQLite round-trip, append-only, FK and fault-rollback tests. (AC: 23-26)
+- [x] Add CLI, hostile input, redaction, offline/prohibited capability and full regression tests. (AC: 21-30)
+- [x] Update README, architecture subset notes, traceability, progress, pending, evidence and actual File List. (AC: 30-31)
+- [x] Run all gates, fix failures and request independent QA before Done. (AC: 30-31)
+
 
 ## Dependencies
 
@@ -186,17 +198,18 @@ Review assignment: `@dev` implements, Support Specialist validates policy conten
 
 ## Definition of Done
 
-- [ ] Implementation approval recorded.
-- [ ] Every AC maps to a test/evidence item; no component is complete without its test.
-- [ ] All applicable canonical `T3-*` tests pass.
-- [ ] Valid/invalid policy behavior and all 16 cells are demonstrated without fallback.
-- [ ] Gap, structured-risk, ranked routing, escalation and stop flows pass without side effects.
-- [ ] CLI human/JSON and deleted/unknown behavior pass.
-- [ ] Real SQLite snapshot, re-triage, FK and rollback tests pass.
-- [ ] ST-01/ST-02 regression and all gates pass with exit codes recorded.
-- [ ] Security review has zero open Critical/High.
-- [ ] README, architecture, traceability, progress, pending, evidence and actual File List are current.
-- [ ] Independent QA issues PASS before Done.
+- [x] Implementation approval recorded.
+- [x] Every AC maps to a test/evidence item; no component is complete without its test.
+- [x] All applicable canonical `T3-*` tests pass.
+- [x] Valid/invalid policy behavior and all 16 cells are demonstrated without fallback.
+- [x] Gap, structured-risk, ranked routing, escalation and stop flows pass without side effects.
+- [x] CLI human/JSON and deleted/unknown behavior pass.
+- [x] Real SQLite snapshot, re-triage, FK and rollback tests pass.
+- [x] ST-01/ST-02 regression and all gates pass with exit codes recorded.
+- [x] Security review has zero open Critical/High.
+- [x] README, architecture, traceability, progress, pending, evidence and actual File List are current.
+- [x] Independent QA issues PASS before Done.
+
 
 ## Dev Notes
 
@@ -216,10 +229,9 @@ Review assignment: `@dev` implements, Support Specialist validates policy conten
 - Mandatory smoke remains offline; manually inspect execution APIs, SQL bindings, redaction and scope.
 - Record results in `docs/testing/evidence/ST-03.md`.
 
-## Planned File List
+## File List
 
-The developer replaces this with the exact actual diff.
-
+- `.env.example`
 - `README.md`
 - `docs/architecture/contracts.md`
 - `docs/architecture/domain-models.md`
@@ -227,60 +239,131 @@ The developer replaces this with the exact actual diff.
 - `docs/pending.md`
 - `docs/progress.md`
 - `docs/stories/ST-03-deterministic-triage-evidence.md`
+- `docs/support/triage-policy-v1.md`
 - `docs/testing/evidence/ST-03.md`
 - `docs/testing/requirements-traceability.md`
-- project-owned policy artifact at an implementation path consistent with the package
-- `src/supportops/{__init__,bootstrap,cli,config,contracts}.py`
-- `src/supportops/domain/{incidents,priority_matrix}.py`
-- triage domain/application modules under `src/supportops/`
+- `pyproject.toml`
+- `src/supportops/__init__.py`
+- `src/supportops/bootstrap.py`
+- `src/supportops/cli.py`
+- `src/supportops/config.py`
+- `src/supportops/domain/triage.py`
 - `src/supportops/persistence/migrations.py`
+- `src/supportops/policies/triage-v1.json`
 - `src/supportops/repositories.py`
-- triage tests in the existing unit/contract/integration/cli/security/smoke groups
+- `src/supportops/triage_engine.py`
+- `src/supportops/triage_policy.py`
+- `src/supportops/triage_service.py`
+- `tests/cli/test_cli.py`
+- `tests/cli/test_triage_cli.py`
+- `tests/contract/test_triage_policy.py`
+- `tests/integration/test_migrations.py`
+- `tests/integration/test_triage_persistence.py`
+- `tests/security/test_triage_safety.py`
+- `tests/smoke/test_startup.py`
+- `tests/unit/test_triage_engine.py`
 
 ## Dev Agent Record
 
 ### Agent Model Used
 
-_To be populated by `@dev`._
+OpenAI Codex (GPT-5)
 
 ### Started At
 
-_Not started._
+2026-08-01
 
 ### Completed At
 
-_Not completed._
+2026-08-01
 
 ### Implementation Notes
 
-_To be populated by `@dev`._
+- Added one packaged, versioned, fail-closed JSON policy with exact matrix,
+  evidence criteria, escalation, questions, risk and stop metadata.
+- Implemented immutable typed triage input/output, deterministic evaluation,
+  application service, composition-root wiring and CLI `triage run/history`.
+- Added checksummed migration 2 and append-only per-incident snapshots inside the
+  existing explicit SQLite Unit of Work.
+- Preserved incomplete-state safety: no priority or route is fabricated when
+  criteria contradict, boundary evidence is missing or a blocking question exists.
+- Kept Streamlit, knowledge/runbook search, hypotheses, plans, LLM/network and
+  command execution outside the increment.
 
 ### Debug Log References
 
-_To be populated by `@dev`._
+- Initial QA identified conditional-escalation traceability and stale version
+  expectations; both were corrected with focused tests.
+- Follow-up QA identified unsupported dimension derivation, missing diagnostic
+  questions, blocking-question precedence and MX-HC/MX-CC boundary gaps; each was
+  corrected before the final regression.
+- The Windows sandbox helper intermittently returned
+  `CreateProcessWithLogonW failed: 2`; localized PowerShell document writes were
+  used only after the required `apply_patch` helper also failed. No application
+  code was changed by the documentation fallback.
+- The unavailable `py -3.12` launcher probe was replaced by the verified project
+  Python 3.12.12 interpreter for the clean-wheel smoke test.
 
 ### Completion Notes
 
-_To be populated by `@dev`._
+All 31 acceptance criteria have corresponding implementation tests or recorded
+validation evidence. The deterministic policy remains an initial, calibratable V1;
+its P2 concentration is explicitly documented as a conservative project decision,
+not a universal ITSM standard. The story is ready for independent QA and remains
+`InReview`, never `Done`, until that gate records PASS.
 
 ### Quality Gate Results
 
-_To be populated by `@dev` with commands, exit codes and counts._
+- Baseline before ST-03: 41/41 tests passed, exit 0.
+- Focused policy/engine suite: 95/95 tests passed, exit 0.
+- Full ST-01/ST-02/ST-03 regression: 150/150 tests passed, exit 0.
+- Ruff: PASS, exit 0.
+- Strict MyPy: PASS across 37 source files, exit 0.
+- Wheel and sdist 0.3.0 build: PASS, exit 0.
+- Clean wheel install, CLI version and configuration validation: PASS, exit 0.
+- `git diff --check`: PASS, exit 0.
 
 ### Evidence References
 
-_Expected: `docs/testing/evidence/ST-03.md`._
+- `docs/testing/evidence/ST-03.md`
 
 ### Actual File List
 
-_To be populated by `@dev`._
+The authoritative 31-file list is recorded in this story's `File List` section.
 
 ## QA Results
 
-_Reserved for independent `@qa` review._
+### Gate: PASS
+
+- Acceptance criteria: 31/31 verified through implementation, tests, and recorded
+  evidence.
+- Independent gates: Ruff PASS; strict MyPy PASS across 37 source files; full
+  Pytest regression 150/150; focused ST-03 suite 108/108; wheel/sdist build PASS;
+  `git diff --check` PASS.
+- Real SQLite/CLI journey: migration 2, complete P2/N2 triage, incomplete triage
+  with blocking questions and STOP-04, P1 incident coordination, and immutable
+  append-only snapshot sequences 1/2/3 verified.
+- Security: zero open Critical, High, or Medium findings; no shell/executor,
+  network, UI, LLM, or automatic action capability introduced.
+- QA-raised issues corrected before PASS: stale version regression, conditional
+  escalation traceability, highest-supported dimension derivation, DQ boundary
+  conditions, blocking-question safety, MX-HC/MX-CC stop behavior, and patch
+  hygiene.
+- Residual documented limitations: the initial V1 policy requires future
+  operational calibration; supported criteria and actor identity remain
+  human-declared; retention and broader sensitive-data guidance remain pending.
+- CodeRabbit was unavailable by project configuration; independent manual review
+  and automated gates were used.
+
+Verdict recorded by `@qa` — Quinn on 2026-08-01. Status transition:
+`InReview → Done`.
 
 ## Change Log
 
 | Date | Version | Description | Author |
 |---|---:|---|---|
 | 2026-08-01 | 0.1.0 | Initial draft derived from approved project artifacts and Support Specialist policy | @sm — River |
+| 2026-08-01 | 0.1.1 | Explicit human approval recorded — Status: Draft → Ready | @sm — River |
+| 2026-08-01 | 0.2.0 | Development started (autonomous execution) — Status: Ready → InProgress | @dev — Dex |
+| 2026-08-01 | 0.3.0 | Implementation and evidence completed — Status: InProgress → InReview | @dev — Dex / @sm — River |
+| 2026-08-01 | 0.3.1 | Independent QA PASS — Status: InReview → Done | @qa — Quinn |
