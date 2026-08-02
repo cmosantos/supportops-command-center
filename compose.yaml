@@ -1,0 +1,39 @@
+name: supportops-command-center
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: supportops-command-center:1.0.0-local
+    environment:
+      SUPPORTOPS_ENVIRONMENT: local
+      SUPPORTOPS_LOG_LEVEL: INFO
+      SUPPORTOPS_LLM_ENABLED: "false"
+      SUPPORTOPS_DB_PATH: /app/data/supportops.db
+      SUPPORTOPS_EXPORT_ROOT: /app/exports
+      STREAMLIT_BROWSER_GATHER_USAGE_STATS: "false"
+    ports:
+      - "127.0.0.1:${SUPPORTOPS_PORT:-8501}:8501"
+    restart: unless-stopped
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    volumes:
+      - supportops_db:/app/data
+      - supportops_exports:/app/exports
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8501/_stcore/health', timeout=2).read()"]
+      interval: 10s
+      timeout: 3s
+      start_period: 20s
+      retries: 5
+
+volumes:
+  supportops_db:
+  supportops_exports:

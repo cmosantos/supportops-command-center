@@ -49,3 +49,12 @@ def test_llm_cannot_be_enabled_in_foundation(
 
     with pytest.raises(ConfigurationError):
         load_settings()
+
+
+def test_explicit_false_llm_environment_is_accepted(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("SUPPORTOPS_LLM_ENABLED", "false")
+
+    assert load_settings().llm_enabled is False

@@ -1,6 +1,7 @@
 .env
 .venv/
 .venv-smoke/
+.venv-clean-*/
 build/
 dist/
 *.egg-info/
@@ -15,9 +16,14 @@ data/*.db
 data/*.sqlite*
 exports/*
 !exports/.gitkeep
+screenshots/*
+!screenshots/.gitkeep
+.screenshot-demo/
 logs/
+*.log
+*.db-wal
+*.db-shm
 .streamlit/secrets.toml
 .idea/
 .vscode/
 .DS_Store
-

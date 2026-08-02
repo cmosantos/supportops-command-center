@@ -4,7 +4,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, ValidationError
+from pydantic import Field, ValidationError, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from supportops.errors import ConfigurationError
@@ -22,11 +22,18 @@ class Settings(BaseSettings):
 
     environment: Literal["local", "test"] = "local"
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
-    llm_enabled: Literal[False] = False
+    llm_enabled: bool = False
     db_path: Path = Path("data/supportops.db")
     db_busy_timeout_ms: int = Field(default=5000, ge=100, le=30000)
     export_root: Path = Path("exports")
     triage_policy_path: Path | None = None
+
+    @field_validator("llm_enabled")
+    @classmethod
+    def reject_enabled_llm(cls, value: bool) -> bool:
+        if value:
+            raise ValueError("LLM must remain disabled")
+        return value
 
 
 def load_settings() -> Settings:

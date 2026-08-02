@@ -73,3 +73,14 @@ reported as passing in Phase 2.
   export content: AC 18-20 — `tests/integration/test_web_facade.py`.
 - Real Streamlit clean startup: AC 24-26 —
   `tests/presentation/test_streamlit_app.py`.
+
+## ST-08 implemented traceability
+
+| Requirement / AC group | Story | Implemented evidence |
+|---|---|---|
+| Regression, clean SQLite and restart | ST-08 AC 1-4, 9 | Full suite plus `tests/hardening/test_clean_runtime.py` |
+| Package inventory and clean installed smokes | ST-08 AC 5-8 | Offline wheel/sdist inspection, clean CLI and installed Streamlit health smoke |
+| Secure container and persistence | ST-08 AC 10-14 | Static delivery tests plus real Compose build/health/restart/recreate with retained named volumes |
+| Repository/dependency/capability hygiene | ST-08 AC 15-17 | Hardening inventory scans and existing AST boundary tests |
+| Documentation and publication readiness | ST-08 AC 18-28 | README, dedicated guides, policies, release notes, roadmap, sanitized screenshot flow and least-permission CI |
+| Independent reviews/final evidence | ST-08 AC 29-31 | `@qa`, `@devops` and campaign root complete the final evidence/commit gate |

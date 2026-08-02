@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Status: Proposed for Phase 2 approval  
+Status: Implemented for V1 1.0.0
 System: SupportOps Command Center  
 Architecture style: local modular monolith with ports and adapters
 
@@ -41,12 +41,11 @@ Streamlit ------------+              |                       |
                                      +--> ports <------------+
                                             |
                   +-------------------------+-----------------------+
-                  |                         |                       |
-           SQLite adapters          Markdown search          LLM provider
-                                                         Null (default)/Ollama
+                  |                         |
+           SQLite adapters          Markdown search/exporters
 ```
 
-## Planned modules
+## Implemented modules
 
 - `presentation.cli`: canonical operational interface.
 - `presentation.streamlit`: local UI and observational dashboard.
@@ -56,7 +55,7 @@ Streamlit ------------+              |                       |
 - `domain.ports`: repository, knowledge, provider, clock, and exporter contracts.
 - `infrastructure.persistence.sqlite`: repositories and versioned migrations.
 - `infrastructure.knowledge.markdown`: lexical local search.
-- `infrastructure.llm`: null, fake-test, and optional Ollama adapters.
+- LLM providers are absent from V1; optional Ollama remains roadmap-only.
 - `infrastructure.configuration`: validated environment and matrix loading.
 - `infrastructure.logging`: structured logging with sensitive-field redaction.
 
@@ -83,10 +82,9 @@ Streamlit ------------+              |                       |
 
 ## Runtime and deployment
 
-Python 3.12 is the target runtime. The local process hosts CLI commands or the
-Streamlit server. SQLite is stored at a configured path and later mounted as a
-Docker volume. Ollama is an optional external local service and is not included
-in the required startup path.
+Python 3.12 hosts CLI commands or Streamlit. The container runs non-root with a
+read-only root filesystem, loopback host publication, healthcheck and separate
+named volumes at `/app/data` and `/app/exports`. Ollama is not included.
 
 ## Observability
 
@@ -99,4 +97,3 @@ command output, and approval notes are excluded or redacted.
 Each increment must provide its mapped tests and keep all earlier tests green.
 CLI end-to-end evidence is required before Streamlit implementation. Security
 findings rated critical block progress. Human approval is required between phases.
-

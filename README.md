@@ -1,126 +1,139 @@
 # SupportOps Command Center
 
-Local-first incident assistance for N1 and N2 support professionals.
+Local-first, deterministic incident assistance for N1/N2 service-desk teams. The
+V1 provides audited incident lifecycle, evidence-based triage, offline runbooks,
+nine-section ticket documentation, safe exports, and a Streamlit dashboard over
+one shared application layer.
 
-## Current status
+> Publication status: prepared locally, not published. A definitive license,
+> security contact, Git remote, release tag, and push require human decisions.
 
-Phase 3, Increment 3 provides the Python 3.12 foundation, SQLite incident
-lifecycle, and deterministic evidence-based triage through the canonical CLI.
-The lifecycle remains strictly `OPEN ↔ CLOSED`. Triage uses the approved initial
-V1 policy and is subject to future calibration with operational data. Runbooks,
-Streamlit, LLM/network providers, exports, dashboard, restore, physical deletion,
-and command execution remain absent.
+## Why it is useful
 
-## Install
+- One traceable path from registration through triage, performed work and export.
+- Deterministic decisions and lexical ranking that remain explainable offline.
+- CLI-first behavior reused by a thin Streamlit interface.
+- SQLite history, soft deletion, immutable triage/document revisions and safe
+  Markdown/JSON export.
+- No command execution, administrative action, LLM, embeddings, vector database,
+  ticket-system integration, or required outbound service.
 
-```powershell
-uv venv --python 3.12 .venv
-uv sync --extra dev
-.\.venv\Scripts\supportops.exe config validate
-.\.venv\Scripts\supportops.exe db status
-.\.venv\Scripts\supportops.exe db init
-```
+## Requirements and installation
 
-Configuration is optional and uses the `SUPPORTOPS_` prefix. See `.env.example`.
-LLM is disabled. `db status` does not create or migrate a missing database;
-`db init` applies ordered, checksummed migrations transactionally and is
-idempotent.
-
-## CLI lifecycle
+Use Python 3.12 and [uv](https://docs.astral.sh/uv/) locally:
 
 ```powershell
-.\.venv\Scripts\supportops.exe incident create --title "Network" --description "No access" --affected-party "Finance" --affected-service "LAN" --impact moderate --urgency high --symptoms "Timeout"
-.\.venv\Scripts\supportops.exe incident get INCIDENT_ID
-.\.venv\Scripts\supportops.exe incident list
-.\.venv\Scripts\supportops.exe incident update INCIDENT_ID --expected-version 1 --title "Updated"
-.\.venv\Scripts\supportops.exe incident close INCIDENT_ID
-.\.venv\Scripts\supportops.exe incident reopen INCIDENT_ID
-.\.venv\Scripts\supportops.exe incident history INCIDENT_ID
-.\.venv\Scripts\supportops.exe incident delete INCIDENT_ID --reason "duplicate" --confirm
+uv sync --locked --extra dev
+uv run supportops config validate
+uv run supportops db status
+uv run supportops db init
 ```
 
-Deletion is logical, irreversible in V1, and excluded from operational queries.
-There is no restore or physical-delete command. Approval identity is user-declared
-and not authenticated; approval only records exact action metadata and never
-executes the action.
+Configuration uses `SUPPORTOPS_` environment variables. Copy `.env.example` only
+for non-sensitive local configuration. Defaults store the database at
+`data/supportops.db` and exports under `exports/`; both paths are configurable.
+See [installation](docs/guides/installation.md) for Windows and containers.
 
-## CLI deterministic triage
-
-Initialize the database and create an incident first. Triage accepts one JSON
-object of structured evidence; free text never creates a risk signal. Use
-`--format json` for machine-readable output.
+## Run
 
 ```powershell
-$evidence = '{"impact":"high","urgency":"high","supported_impact_criteria":["high"],"supported_urgency_criteria":["high"],"affected_scope":"Finance department","scope_source":"multiple tickets","affected_process":"shift processing","process_criticality":"important","workaround_status":"limited","workaround_validation":"tested","business_consequence":"significant delay","containment_status":"stable scope","critical_impact_reassessment":"critical expansion not supported","deadline":"current shift","deadline_owner":"finance lead","delay_consequence":"cutoff missed","time_to_harm":"within hours","condition_stability":"stable","failure_frequency":"continuous","trend":"stable","symptom_context":"timestamped timeout","prior_actions":"read-only checks","recent_change":"none","corroboration":"multiple tickets","risk_assessment_status":"none_identified","requires_admin_or_change":false,"within_approved_runbook_or_noninvasive":true,"n1_safe_boundary":true,"expected_result_defined":true,"stop_condition_defined":true}'
-.\.venv\Scripts\supportops.exe triage run INCIDENT_ID --evidence-json $evidence
-.\.venv\Scripts\supportops.exe triage run INCIDENT_ID --evidence-json $evidence --format json
-.\.venv\Scripts\supportops.exe triage history INCIDENT_ID --format json
+# CLI
+uv run supportops doctor
+uv run supportops incident list
+uv run supportops knowledge search "sincronização OneDrive"
+
+# Web UI (then open http://127.0.0.1:8501)
+uv run streamlit run src/supportops/streamlit_app.py --server.address=127.0.0.1
 ```
 
-The default packaged policy is `supportops-triage`, schema `1`, matrix
-`2026.08-v1`. A project-owned override may be selected with
-`SUPPORTOPS_TRIAGE_POLICY_PATH`; invalid, incomplete, unsupported, or unreadable
-policy configuration stops startup and never activates a fallback. Re-triage
-appends a new immutable snapshot and never overwrites prior results.
+The UI can initialize/check the database; register, query, update, close, reopen
+and logically delete incidents; display history; run triage; search runbooks;
+record performed procedures; generate/export documentation; and show dashboard
+metrics. It accesses these operations only through the application facade.
 
-## Quality checks
+## Docker Compose
 
 ```powershell
-.\.venv\Scripts\python.exe -m ruff check .
-.\.venv\Scripts\python.exe -m mypy src tests
-.\.venv\Scripts\python.exe -m pytest -q
-.\.venv\Scripts\python.exe -m build
+docker compose config
+docker compose build
+docker compose up -d
+docker compose ps
 ```
 
-The application has no subprocess, shell, administrative executor, Streamlit,
-network, or LLM adapter. SQL values are bound parameters and errors shown to the
-operator omit SQL, database paths, sensitive payloads, and tracebacks.
-## Local knowledge search (0.4.0)
+Open `http://127.0.0.1:8501`. The image runs as UID/GID `10001`, drops Linux
+capabilities, uses a read-only root filesystem, and persists SQLite and exports in
+separate named volumes. Change only the host port with `SUPPORTOPS_PORT`. Stop
+without deleting user data using `docker compose down` (do not add `--volumes`).
 
-The packaged offline corpus contains five validated operational runbooks. Search
-is case- and accent-insensitive, explainable, and deterministic:
+## Synthetic end-to-end demonstration
 
 ```powershell
-supportops knowledge search "sincronização OneDrive"
-supportops knowledge search "conta bloqueada" --format json
+uv run supportops db init
+$incident = (uv run supportops incident create --title "Synthetic OneDrive sync" --description "Training record; client paused" --affected-party "Example User" --affected-service "OneDrive" --impact moderate --urgency moderate --symptoms "No synchronization" --category storage --actor demo-analyst | ConvertFrom-Json).id
+uv run supportops incident list
+uv run supportops triage run $incident --evidence-json '{"impact":"moderate","urgency":"moderate"}' --actor demo-analyst --format json
+uv run supportops knowledge search "onedrive sincronização" --format json
+uv run supportops performed record $incident --description "Checked client state" --result "Client was paused" --actor demo-analyst
+uv run supportops document generate $incident --actor demo-analyst --format json
+uv run supportops document show $incident --revision 1 --format json
+uv run supportops export $incident --revision 1 --format markdown
+uv run supportops export $incident --revision 1 --format json --output json
 ```
 
-An unmatched query succeeds with an empty result. Invalid queries and invalid
-corpora fail safely. The Markdown format, score weights, stable tie-break, and
-authoring rules are specified in `docs/support/knowledge-runbook-format.md`.
+See the [complete demo](docs/guides/demo.md) and [usage guide](docs/guides/usage.md).
 
-## Persisted incident documentation and exports (0.5.0)
+## Architecture
 
-Suggested actions and user-reported performed procedures are separate immutable
-records. Documentation generation reads only operational, non-deleted incident
-records and appends a nine-section revision. Missing information is stated
-neutrally; the application does not infer that a suggestion or approval was
-performed.
+```text
+CLI ---------+                         +--> SQLite (database volume)
+             +--> Application facade -+--> Markdown runbooks (read-only package)
+Streamlit ---+                         +--> exporters (exports volume)
+```
+
+Domain and application services own validation and policy. Presentation adapters
+do not contain SQL, filesystem export logic, ranking rules or arbitrary execution.
+See the [architecture](docs/architecture/overview.md).
+
+## Quality and security
 
 ```powershell
-supportops performed record INCIDENT_ID --description "Checked sync state" --result "Client was paused" --actor "n1"
-supportops performed list INCIDENT_ID --format json
-supportops document generate INCIDENT_ID --actor "n1"
-supportops document show INCIDENT_ID --revision 1 --format json
-supportops document history INCIDENT_ID
-supportops export INCIDENT_ID --revision 1 --format markdown
-supportops export INCIDENT_ID --revision 1 --format json --output json
+uv run ruff check .
+uv run mypy src tests
+uv run pytest -q
+uv run python -m build --no-isolation
+git diff --check
 ```
 
-Exports use the fixed `SUPPORTOPS_EXPORT_ROOT` (`exports` by default), opaque
-application-generated filenames, resolved-path containment, atomic publication,
-and no-overwrite semantics. CLI callers never provide a path or filename. Export
-JSON schema `1` contains provenance plus the exact persisted nine sections.
-## Interface web local
+Input is validated, SQL uses parameters, migrations are checksummed and exports
+are contained, atomic and non-overwriting. Incident text is operator-controlled:
+do not enter credentials or unnecessary personal data. Review
+[SECURITY.md](SECURITY.md), the [test guide](docs/guides/testing.md), and the
+[security boundary](docs/guides/security.md).
 
-A interface Streamlit reutiliza a mesma composição e os mesmos casos de uso da
-CLI; ela não acessa SQLite, runbooks ou arquivos de exportação diretamente.
+## Troubleshooting
 
-```powershell
-uv run streamlit run src/supportops/streamlit_app.py
-```
+- `db status` is intentionally non-mutating; run `db init` to apply migrations.
+- Invalid configuration returns a safe error and exit code `2`; unexpected errors
+  return `1`; successful commands and an empty knowledge search return `0`.
+- If port 8501 is busy, use `SUPPORTOPS_PORT=8502` for Compose or choose another
+  Streamlit `--server.port`.
+- Docker volume write failures usually mean ownership was changed outside the
+  container; inspect the exact named volume instead of deleting it.
 
-Use a navegação lateral para verificar o banco, operar incidentes e histórico,
-executar triagem determinística, buscar runbooks, registrar procedimentos
-realizados, gerar documentação/exportações e observar o dashboard. Procedimentos
-sugeridos são somente orientação e nunca são executados pela aplicação.
+## Limitations and roadmap
+
+V1 is single-node SQLite with normal file-locking/scale limits. Actor identifiers
+are declared, not authenticated. Soft deletion is irreversible and has no restore.
+Search is lexical and depends on curated aliases. There is no ticket integration,
+SLA pause calculation, automatic retention, shell/admin execution, or guarantee
+that incident text is free of sensitive data. See [known limitations](docs/known-limitations.md).
+
+Increment 7 (optional Ollama experimentation) remains outside V1 and has no
+timeline. Any future provider must preserve deterministic offline operation and
+the no-execution boundary. See the [roadmap](docs/roadmap.md).
+
+## Contributing and publication
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md). Before publishing, a human must select a
+license and security contact, configure repository controls, review screenshots,
+create a remote, push and deliberately tag/release. No `LICENSE` is included.

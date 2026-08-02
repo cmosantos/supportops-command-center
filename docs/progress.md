@@ -117,3 +117,17 @@ No functional application component is implemented or claimed complete.
   245 passed, 2 environment-conditioned Windows symlink skips.
 - [x] Independent QA PASS: 30/30 AC after administration; zero open C/H/M.
 - [x] Version `0.6.0`; no remote/push; Increment 7 remains excluded; Increment 8 next.
+
+## Phase 3 — Increment 8 complete
+
+- [x] ST-08 hardened the deterministic offline V1 and advanced the package to `1.0.0`.
+- [x] Secure Docker/Compose runs as UID/GID 10001 with read-only root, dropped
+  capabilities, healthcheck, and separate persistent database/export volumes.
+- [x] Locked dependencies, clean wheel/CLI/Streamlit smokes, SQLite integrity,
+  exports, restart and forced-recreation persistence passed.
+- [x] Professional delivery, security, release, roadmap, demonstration,
+  screenshot, and GitHub-readiness documentation completed.
+- [x] Ruff, strict MyPy, offline build, and regression passed: 256 passed,
+  3 environment-conditioned Windows symlink/reparse skips.
+- [x] Increment 7/Ollama remains optional and unimplemented. No license, remote,
+  push, PR, tag, release, registry publication, credential, or external action occurred.

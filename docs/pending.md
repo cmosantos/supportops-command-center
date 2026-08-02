@@ -19,8 +19,7 @@
 - Approver identity remains user-declared and unauthenticated.
 - Re-triage snapshots are append-only and have no update/delete application API.
 - Invalid triage policy configuration stops startup without a fallback.
-- Streamlit, hypotheses, troubleshooting plans, LLM/network providers, command
-  execution, restore and physical deletion remain absent.
+- LLM/network providers, command execution, restore and physical deletion remain absent.
 - Knowledge search is local, lexical, deterministic, read-only, and rooted in the
   packaged five-runbook corpus; it creates no authorization or execution path.
 - Performed procedures are user-reported immutable facts, remain separate from
@@ -32,10 +31,19 @@
 - Incident category is explicit persisted input; it is never inferred from a
   triage matrix rule ID.
 
+## Publication decisions still requiring a human
+
+1. Select a definitive license after owner/legal review.
+2. Choose repository owner, name, visibility, security contact, and whether
+   container or package publication is desired.
+3. Separately approve remote creation, branch protections, push, tag, and release;
+   none was authorized or performed by this campaign.
+
 ## Gate
 
-ST-06 is Done after independent QA PASS with zero open Critical/High/Medium
-findings. The full regression passed with 245 tests and two environment-conditioned
-Windows symlink skips. Clean installed CLI and Streamlit smokes passed at version
-`0.6.0`. The local Increment 6 commit is authorized on `main`; no Git remote is
-configured. Increment 8 follows; Increment 7 remains optional and excluded.
+ST-08 completes local V1 `1.0.0` hardening after independent QA and DevOps PASS
+with zero open Critical/High/Medium findings. Regression passed with 256 tests and
+three environment-conditioned Windows skips. Clean CLI, Streamlit, Docker health,
+SQLite/export persistence and recreation smokes passed. The local ST-08 commit is
+the final campaign action on `main`; no remote or push is configured. Increment 7
+remains optional, excluded, and unimplemented.
