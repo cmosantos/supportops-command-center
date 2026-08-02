@@ -9,7 +9,18 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
-TEXT_SUFFIXES = {".md", ".py", ".toml", ".yaml", ".yml", ".ps1", ".example"}
+TEXT_SUFFIXES = {
+    ".md",
+    ".py",
+    ".toml",
+    ".yaml",
+    ".yml",
+    ".json",
+    ".svg",
+    ".txt",
+    ".ps1",
+    ".example",
+}
 FORBIDDEN_NAMES = {".env", "secrets.toml", "id_rsa", "id_ed25519"}
 
 
@@ -67,7 +78,11 @@ def test_no_committed_secret_shapes_or_absolute_developer_paths() -> None:
         if secret.search(text) or private_key in text:
             violations.append(str(path.relative_to(ROOT)))
         normalized = text.casefold().replace("/", "\\")
-        if "c:\\users\\claud\\" in normalized:
+        windows_user_path = re.search(r"[a-z]:\\users\\[^\\]+\\", normalized)
+        unix_user_path = re.search(
+            r"(?<![a-z0-9_])/(?:home|users)/[^/\s]+/", text.casefold()
+        )
+        if windows_user_path or unix_user_path:
             violations.append(str(path.relative_to(ROOT)))
     assert violations == []
 

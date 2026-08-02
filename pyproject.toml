@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "supportops-command-center"
 dynamic = ["version"]
-description = "Local-first support incident assistance foundation"
+description = "Local-first deterministic incident operations for N1/N2 support teams"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [

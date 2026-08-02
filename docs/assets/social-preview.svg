@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title desc">
+  <title id="title">SupportOps Command Center social preview</title>
+  <desc id="desc">Deterministic incident operations for N1 and N2 support teams.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#070b17"/>
+      <stop offset="0.6" stop-color="#111827"/>
+      <stop offset="1" stop-color="#1e1b4b"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#38bdf8"/>
+      <stop offset="0.55" stop-color="#818cf8"/>
+      <stop offset="1" stop-color="#c084fc"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="20" stdDeviation="26" flood-color="#020617" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+  <rect width="1280" height="640" fill="url(#bg)"/>
+  <circle cx="1140" cy="90" r="300" fill="#2563eb" opacity="0.13"/>
+  <circle cx="1190" cy="610" r="330" fill="#7c3aed" opacity="0.13"/>
+  <g opacity="0.22" stroke="#93c5fd">
+    <path d="M860 60h360M820 120h400M780 180h440M740 240h480M740 300h480M780 360h440M820 420h400M860 480h360"/>
+    <path d="M900 20v520M970 20v520M1040 20v520M1110 20v520M1180 20v520"/>
+  </g>
+  <g transform="translate(84 86)" filter="url(#shadow)">
+    <rect width="96" height="96" rx="26" fill="url(#accent)"/>
+    <path d="M26 29h44v11H26zm0 19h44v11H26zm0 19h30v11H26z" fill="#fff"/>
+  </g>
+  <text x="84" y="270" fill="#f8fafc" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="68" font-weight="760">SupportOps</text>
+  <text x="84" y="344" fill="#f8fafc" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="68" font-weight="760">Command Center</text>
+  <text x="88" y="410" fill="#cbd5e1" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="27">Local-first incident operations for N1/N2 teams</text>
+  <text x="88" y="452" fill="#94a3b8" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="21">Deterministic triage · Offline runbooks · Auditable workflows · Safe exports</text>
+  <g font-family="Inter,Segoe UI,Arial,sans-serif" font-size="18" font-weight="650">
+    <g transform="translate(88 512)"><rect width="136" height="46" rx="23" fill="#0f172a" stroke="#38bdf8"/><text x="22" y="30" fill="#e0f2fe">Python 3.12</text></g>
+    <g transform="translate(242 512)"><rect width="128" height="46" rx="23" fill="#0f172a" stroke="#818cf8"/><text x="23" y="30" fill="#e0e7ff">Streamlit</text></g>
+    <g transform="translate(388 512)"><rect width="108" height="46" rx="23" fill="#0f172a" stroke="#a78bfa"/><text x="24" y="30" fill="#ede9fe">SQLite</text></g>
+    <g transform="translate(514 512)"><rect width="108" height="46" rx="23" fill="#0f172a" stroke="#c084fc"/><text x="24" y="30" fill="#f3e8ff">Docker</text></g>
+  </g>
+</svg>

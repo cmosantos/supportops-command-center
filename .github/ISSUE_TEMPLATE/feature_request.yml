@@ -1,0 +1,38 @@
+name: Feature request
+description: Propose a bounded improvement that preserves safety and determinism
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Describe the operator or service-desk problem, not only a preferred implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+    validations:
+      required: true
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: Safety and scope boundaries
+      description: Explain effects on determinism, data handling, command execution, network access, and human approval.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Suggested acceptance criteria
+  - type: checkboxes
+    id: agreement
+    attributes:
+      label: Project boundaries
+      options:
+        - label: This request does not assume automatic shell or administrative execution.
+          required: true
+        - label: This request can be demonstrated with synthetic data.
+          required: true
