@@ -69,4 +69,20 @@ No functional application component is implemented or claimed complete.
 - [x] Independent QA PASS: 31/31 acceptance criteria; zero Critical/High/Medium.
 - [x] Version `0.3.0` committed as `4ac772e` on branch `main`.
 - [x] Post-commit checkpoint verified clean, with no Git remote configured.
-- [ ] Increment 4 is not authorized and has not started.
+- [x] Increment 4 was explicitly authorized on 2026-08-02.
+
+## Phase 3 — Increment 4 complete
+
+- [x] ST-04 approved and implemented as a CLI-first local knowledge slice.
+- [x] Five versioned Markdown runbooks authored, validated, and packaged.
+- [x] Deterministic lexical search covers title, aliases, symptoms, keywords,
+  and content with case/accent normalization and explainable evidence.
+- [x] Fixed runtime root, resolved-path containment, strict UTF-8/TOML/body
+  validation, empty-corpus rejection, and safe errors implemented.
+- [x] Human and JSON `knowledge search` flows, including explicit no-result
+  behavior, demonstrated offline.
+- [x] Ruff, strict MyPy, offline build, and full regression passed: 192 passed,
+  1 environment-conditioned Windows symlink test skipped.
+- [x] Independent QA PASS: 20/20 acceptance criteria after final administration;
+  zero open Critical/High/Medium findings.
+- [x] Version `0.4.0`; no remote or push; Increment 5 remains unstarted.

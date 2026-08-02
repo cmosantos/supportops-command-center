@@ -108,11 +108,17 @@ is immutable; a new decision creates a new record.
 
 ## KnowledgeDocument and SearchResult
 
-Document fields: id, title, aliases, category, symptoms, risk_notes,
-escalation_criteria, path_within_knowledge_root, content, revision.
+Implemented ST-04 document fields: id, title, aliases, category, symptoms,
+keywords, risk_notes, escalation_criteria, root-contained relative source path,
+content, and revision.
 
 Search result fields: document metadata, lexical score, matched_terms, excerpt.
 Resolved paths must remain inside the configured knowledge root.
+
+Search results expose validated display metadata, integer lexical score, sorted
+matched terms, deterministic excerpt, revision, and relative source file. The
+canonical scoring and tie-break contract is documented in
+`docs/support/knowledge-runbook-format.md`.
 
 ## IncidentDocumentation
 

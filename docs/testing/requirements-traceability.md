@@ -10,7 +10,7 @@ reported as passing in Phase 2.
 | RQ-03 Missing evidence and questions first | ST-03 Evidence | T-U-020 gaps; T-U-021 answered evidence; T-E-020 questions precede solution |
 | RQ-04 Hypothesis tree | ST-04 Hypotheses | T-C-010 required fields; T-U-030 confidence/source; T-E-030 evaluation in documentation |
 | RQ-05 Safe troubleshooting order | ST-05 Troubleshooting | T-U-040 stage order; T-U-041 escalation; T-S-010 sensitive action; T-E-040 full plan |
-| RQ-06 Five local Markdown runbooks | ST-06 Knowledge | T-I-020 all five found; T-U-050 normalized search; T-I-021 corrupt file; T-S-020 traversal |
+| RQ-06 Five local Markdown runbooks | ST-04 Knowledge | T4-INT all five found; T4-UNIT normalized/ranked search; T4-INVALID corrupt corpus; T4-SEC traversal |
 | RQ-07 Structured command suggestions | ST-07 Safe actions | T-C-020 metadata; T-U-060 approval marker; T-S-030 no executor/shell |
 | RQ-08 Persisted human approval | ST-07 Safe actions | T-I-030 exact action record; T-I-031 no replay; T-S-031 rejection remains non-executable |
 | RQ-09 Ticket documentation | ST-08 Documentation | T-C-030 nine sections; T-I-040 persisted facts; T-S-040 redacted output |
@@ -45,3 +45,13 @@ reported as passing in Phase 2.
 | Atomic immutable persistence and re-triage | ST-03 AC 24-26 | `T3-INT-01..02`, v1→v2 migration, FK orphan and fault rollback |
 | Hostile input, redaction and prohibited capabilities | ST-03 AC 27-29 | `T3-SEC-01..03`, AST and CLI canary tests |
 | Full gates and isolation | ST-03 AC 30-31 | Ruff, MyPy, Pytest, build/wheel, CLI smoke and Git evidence in `docs/testing/evidence/ST-03.md` |
+
+## ST-04 implemented traceability
+
+| Requirement / AC group | Story | Implemented evidence |
+|---|---|---|
+| Runbook format and five mandatory documents | ST-04 AC 1-3 | Format specification, packaged corpus validation, five-scenario integration tests |
+| Replaceable port and deterministic lexical search | ST-04 AC 4-9 | Protocol/composition tests; normalization, field weights, ranking, tie and repeatability unit tests |
+| Human/JSON CLI and no-result behavior | ST-04 AC 10-12 | Knowledge CLI tests and recorded demonstrations |
+| Invalid corpus and filesystem containment | ST-04 AC 13-16 | Missing/empty/corrupt/duplicate/encoding/structure tests; traversal, outside-root and conditional symlink tests |
+| Offline scope, gates, QA and completion | ST-04 AC 17-20 | Prohibited-capability scan, Ruff, MyPy, 192-test regression, offline build, independent QA and `docs/testing/evidence/ST-04.md` |

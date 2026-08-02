@@ -1,5 +1,5 @@
 from supportops.bootstrap import Application, build_application
-from supportops.contracts import DiagnosticsProvider, VersionProvider
+from supportops.contracts import DiagnosticsProvider, KnowledgeSearch, VersionProvider
 
 
 def test_composition_root_satisfies_foundation_contracts() -> None:
@@ -8,3 +8,4 @@ def test_composition_root_satisfies_foundation_contracts() -> None:
     assert isinstance(application, Application)
     assert isinstance(application.version_provider, VersionProvider)
     assert isinstance(application.diagnostics_provider, DiagnosticsProvider)
+    assert isinstance(application.knowledge_service._search, KnowledgeSearch)

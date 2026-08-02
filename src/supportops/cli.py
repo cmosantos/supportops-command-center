@@ -84,6 +84,17 @@ def build_parser() -> argparse.ArgumentParser:
     triage_history.add_argument("incident_id")
     triage_history.add_argument("--format", choices=("human", "json"), default="human")
 
+    knowledge = commands.add_parser("knowledge", help="local knowledge operations")
+    knowledge_commands = knowledge.add_subparsers(
+        dest="knowledge_command", required=True
+    )
+    knowledge_search = knowledge_commands.add_parser("search")
+    knowledge_search.add_argument("query")
+    knowledge_search.add_argument("--limit", type=int, default=10)
+    knowledge_search.add_argument(
+        "--format", choices=("human", "json"), default="human"
+    )
+
     approval = commands.add_parser("approval", help="record human decisions")
     approval_commands = approval.add_subparsers(dest="approval_command", required=True)
     record = approval_commands.add_parser("record")
@@ -126,6 +137,8 @@ def dispatch(args: argparse.Namespace, application: Application) -> int:
         return _dispatch_incident(args, application)
     elif args.command == "triage":
         return _dispatch_triage(args, application)
+    elif args.command == "knowledge":
+        return _dispatch_knowledge(args, application)
     elif args.command == "approval":
         snapshot = json.loads(args.action_snapshot)
         if not isinstance(snapshot, dict):
@@ -143,6 +156,32 @@ def dispatch(args: argparse.Namespace, application: Application) -> int:
             )
         )
         _print_model(approval)
+    return 0
+
+
+def _dispatch_knowledge(args: argparse.Namespace, application: Application) -> int:
+    results = application.knowledge_service.search(args.query, args.limit)
+    if args.format == "json":
+        print(
+            json.dumps(
+                {
+                    "query": args.query,
+                    "results": [item.model_dump(mode="json") for item in results],
+                },
+                ensure_ascii=False,
+                sort_keys=True,
+            )
+        )
+        return 0
+    if not results:
+        print("No knowledge matches found.")
+        return 0
+    print(f"Knowledge matches: {len(results)}")
+    for rank, item in enumerate(results, start=1):
+        print(f"{rank}. {item.title}")
+        print(f"   score: {item.score}; matched: {', '.join(item.matched_terms)}")
+        print(f"   revision: {item.revision}; source: {item.source_path}")
+        print(f"   evidence: {item.excerpt}")
     return 0
 
 

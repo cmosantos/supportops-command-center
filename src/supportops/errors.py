@@ -51,3 +51,9 @@ class PersistenceError(SupportOpsError):
     """Raised when persistence fails without exposing database details."""
 
     exit_code = 7
+
+
+class KnowledgeError(SupportOpsError):
+    """Raised when the local knowledge corpus cannot be used safely."""
+
+    exit_code = 8

@@ -75,3 +75,16 @@ appends a new immutable snapshot and never overwrites prior results.
 The application has no subprocess, shell, administrative executor, Streamlit,
 network, or LLM adapter. SQL values are bound parameters and errors shown to the
 operator omit SQL, database paths, sensitive payloads, and tracebacks.
+## Local knowledge search (0.4.0)
+
+The packaged offline corpus contains five validated operational runbooks. Search
+is case- and accent-insensitive, explainable, and deterministic:
+
+```powershell
+supportops knowledge search "sincronização OneDrive"
+supportops knowledge search "conta bloqueada" --format json
+```
+
+An unmatched query succeeds with an empty result. Invalid queries and invalid
+corpora fail safely. The Markdown format, score weights, stable tie-break, and
+authoring rules are specified in `docs/support/knowledge-runbook-format.md`.

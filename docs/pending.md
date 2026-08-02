@@ -4,8 +4,9 @@
 
 1. Security/Product must define a data-retention period. No automatic purge,
    physical deletion or fictional retention policy exists in V1.
-2. Technical Writer/Support Specialist must define safe redaction guidance for
-   future example incident data and runbooks.
+2. Broader sensitive-data redaction guidance for future incident examples remains
+   pending. ST-04 runbooks contain no credentials or personal data and follow the
+   approved local authoring safety rules.
 3. The approved initial triage policy must be calibrated in a future authorized
    increment using real operational data. Its conservative P2 concentration is a
    V1 safety decision, not a universal ITSM standard.
@@ -18,12 +19,14 @@
 - Approver identity remains user-declared and unauthenticated.
 - Re-triage snapshots are append-only and have no update/delete application API.
 - Invalid triage policy configuration stops startup without a fallback.
-- Streamlit, runbook search, hypotheses, troubleshooting plans, LLM/network
-  providers, command execution, restore and physical deletion remain absent.
+- Streamlit, hypotheses, troubleshooting plans, LLM/network providers, command
+  execution, restore and physical deletion remain absent.
+- Knowledge search is local, lexical, deterministic, read-only, and rooted in the
+  packaged five-runbook corpus; it creates no authorization or execution path.
 
 ## Gate
 
-ST-03 is Done after independent QA PASS: 31/31 acceptance criteria and the full
-150/150 regression passed. Version `0.3.0` is committed as `4ac772e` on the clean
-`main` branch, with no Git remote configured. Increment 4 has not started and
-remains blocked until explicit human approval after the final ST-03 report.
+ST-04 is Done after independent QA PASS with zero open Critical/High/Medium
+findings. The full regression passed with 192 tests and one environment-conditioned
+Windows symlink skip. Version `0.4.0` is ready for its authorized local commit on
+`main`; no Git remote is configured and Increment 5 has not started.

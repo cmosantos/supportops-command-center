@@ -33,8 +33,10 @@ performed-procedure reports, approvals, and documentation revisions.
 
 ### `KnowledgeSearch`
 
-`search(query, limit)`, `get(document_id)`, and `health()` over documents rooted
-inside the configured knowledge directory.
+Implemented in ST-04 as a typed `Protocol`: `search(query, limit)`,
+`get(document_id)`, and `health()` over documents rooted inside the configured
+knowledge directory. `MarkdownKnowledgeSearch` is the replaceable local adapter;
+the CLI depends on `KnowledgeService`, not Markdown parsing or scoring.
 
 ### `PriorityPolicy`
 
@@ -79,7 +81,8 @@ Presentation adapters map these errors to stable exit codes or safe UI messages.
 
 ## CLI contract
 
-Planned command groups: `incident`, `triage`, `knowledge`, `approval`, `document`,
+Command groups include `incident`, `triage`, `knowledge`, and `approval`; planned
+groups include `document`,
 `export`, and `dashboard`. Machine-readable JSON output will be available where
 needed for testing. The CLI contains no domain rules.
 
