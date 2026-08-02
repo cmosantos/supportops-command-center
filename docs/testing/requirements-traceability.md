@@ -55,3 +55,13 @@ reported as passing in Phase 2.
 | Human/JSON CLI and no-result behavior | ST-04 AC 10-12 | Knowledge CLI tests and recorded demonstrations |
 | Invalid corpus and filesystem containment | ST-04 AC 13-16 | Missing/empty/corrupt/duplicate/encoding/structure tests; traversal, outside-root and conditional symlink tests |
 | Offline scope, gates, QA and completion | ST-04 AC 17-20 | Prohibited-capability scan, Ruff, MyPy, 192-test regression, offline build, independent QA and `docs/testing/evidence/ST-04.md` |
+
+## ST-05 implemented traceability
+
+| Requirement / AC group | Story | Implemented evidence |
+|---|---|---|
+| Performed/suggested separation and traceability | ST-05 AC 1-5, 9 | Typed domain tests, real-SQLite ordered history and invalid-reference rollback |
+| Persisted nine-section revisions | ST-05 AC 6-11 | Generation/history integration and CLI journey tests |
+| Markdown/JSON adapters | ST-05 AC 12-15 | Determinism, strict JSON, Unicode, heading-order and hostile-content unit tests |
+| Fixed-root safe publication | ST-05 AC 16-18 | Traversal, absolute/drive/alternate path, invalid-root and collision security tests |
+| CLI and safe errors | ST-05 AC 19-22 | Performed/document/export CLI E2E plus complete ST-01–04 regression |

@@ -85,4 +85,18 @@ No functional application component is implemented or claimed complete.
   1 environment-conditioned Windows symlink test skipped.
 - [x] Independent QA PASS: 20/20 acceptance criteria after final administration;
   zero open Critical/High/Medium findings.
-- [x] Version `0.4.0`; no remote or push; Increment 5 remains unstarted.
+- [x] Version `0.4.0` committed as `7be7b77`; no remote or push.
+
+## Phase 3 — Increment 5 complete
+
+- [x] ST-05 approved and implemented with strict performed-procedure records.
+- [x] Migration 3 adds append-only performed procedures and documentation revisions.
+- [x] Nine-section documentation is generated only from persisted incident-scoped facts.
+- [x] Markdown and JSON exporters use generated opaque names, fixed-root containment,
+  no-overwrite atomic publication, and safe literal rendering.
+- [x] CLI-first performed/document/export journeys pass in human and JSON modes.
+- [x] Ruff, strict MyPy, offline build/install, and full regression passed:
+  218 passed, 2 environment-conditioned Windows symlink skips.
+- [x] Independent QA PASS: 25/25 acceptance criteria after administration;
+  zero open Critical/High/Medium findings.
+- [x] Version `0.5.0`; no remote or push; Increment 6 authorized by campaign gate.

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import Protocol, runtime_checkable
 
 from supportops.config import Settings
+from supportops.domain.documentation import ExportArtifact, IncidentDocumentation
 from supportops.domain.knowledge import KnowledgeDocument, SearchResult
 
 
@@ -38,3 +39,11 @@ class KnowledgeSearch(Protocol):
 
     def health(self) -> bool:
         """Validate the entire configured corpus."""
+
+
+@runtime_checkable
+class IncidentExporter(Protocol):
+    """Serialize a persisted documentation revision without filesystem access."""
+
+    def export(self, documentation: IncidentDocumentation) -> ExportArtifact:
+        """Return one deterministic, application-named artifact."""

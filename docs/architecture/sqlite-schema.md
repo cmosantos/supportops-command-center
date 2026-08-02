@@ -150,3 +150,16 @@ A complete row requires priority and route; an incomplete row requires both to b
 NULL. Sequence is calculated with `MAX(sequence)+1` inside `BEGIN IMMEDIATE`.
 The repository exposes insert/list/latest only and orders by sequence. The result
 and all questions are inserted atomically; injected failures roll back the row.
+
+## ST-05 implemented subset
+
+Migration 3 is forward-only and checksummed. `performed_procedures` uses an
+opaque primary key, incident foreign key, positive unique per-incident sequence,
+non-empty description/result/actor, UTC application timestamp, and optional
+suggested-action identifier. Its repository exposes append and ordered list only.
+
+`incident_documentation` stores an opaque ID, incident foreign key, positive
+unique revision, generator timestamp/actor, and one JSON-valid immutable snapshot
+of the complete typed nine-section document. Revisions are allocated and
+inserted inside `BEGIN IMMEDIATE`; repository operations are append/list/get/
+latest only. Normal access first resolves a non-deleted incident.

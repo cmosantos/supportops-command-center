@@ -17,5 +17,5 @@ def test_all_foundation_commands_work_with_network_blocked(
     assert main(["config", "validate"]) == 0
     assert main(["doctor"]) == 0
     output = capsys.readouterr().out
-    assert "0.4.0" in output
+    assert "0.5.0" in output
     assert "[PASS] composition_root" in output

@@ -6,6 +6,7 @@ import sqlite3
 from datetime import datetime
 from typing import Protocol
 
+from supportops.domain.documentation import IncidentDocumentation, PerformedProcedure
 from supportops.domain.incidents import HumanApproval, Incident, IncidentEvent
 from supportops.domain.triage import TriageOutcome, TriageResult
 
@@ -31,6 +32,22 @@ class ApprovalRepositoryPort(Protocol):
     def matches(
         self, incident_id: str, action_id: str, action_version: int, action_digest: str
     ) -> bool: ...
+    def action_exists(
+        self, incident_id: str, action_id: str, action_version: int, action_digest: str
+    ) -> bool: ...
+    def list(self, incident_id: str) -> tuple[HumanApproval, ...]: ...
+
+
+class PerformedProcedureRepositoryPort(Protocol):
+    def add(self, procedure: PerformedProcedure) -> PerformedProcedure: ...
+    def list(self, incident_id: str) -> tuple[PerformedProcedure, ...]: ...
+
+
+class DocumentationRepositoryPort(Protocol):
+    def add(self, document: IncidentDocumentation) -> IncidentDocumentation: ...
+    def list(self, incident_id: str) -> tuple[IncidentDocumentation, ...]: ...
+    def get(self, incident_id: str, revision: int) -> IncidentDocumentation | None: ...
+    def latest(self, incident_id: str) -> IncidentDocumentation | None: ...
 
 
 class TriageRepositoryPort(Protocol):
@@ -241,6 +258,146 @@ class SQLiteApprovalRepository:
             (incident_id, action_id, action_version, action_digest),
         ).fetchone()
         return row is not None
+
+    def action_exists(
+        self, incident_id: str, action_id: str, action_version: int, action_digest: str
+    ) -> bool:
+        row = self.connection.execute(
+            "SELECT 1 FROM human_approvals WHERE incident_id = ? AND action_id = ? AND action_version = ? AND action_digest = ? LIMIT 1",
+            (incident_id, action_id, action_version, action_digest),
+        ).fetchone()
+        return row is not None
+
+    def list(self, incident_id: str) -> tuple[HumanApproval, ...]:
+        found = self.connection.execute(
+            "SELECT id,incident_id,action_id,action_version,action_digest,"
+            "action_snapshot_json,decision,approver_reference,decided_at,note,created_at "
+            "FROM human_approvals WHERE incident_id = ? ORDER BY created_at,id",
+            (incident_id,),
+        ).fetchall()
+        return tuple(
+            HumanApproval(
+                id=row["id"],
+                incident_id=row["incident_id"],
+                action_id=row["action_id"],
+                action_version=row["action_version"],
+                action_digest=row["action_digest"],
+                action_snapshot=json.loads(row["action_snapshot_json"]),
+                decision=row["decision"],
+                approver_reference=row["approver_reference"],
+                decided_at=datetime.fromisoformat(row["decided_at"]),
+                note=row["note"],
+                created_at=datetime.fromisoformat(row["created_at"]),
+            )
+            for row in found
+        )
+
+
+class SQLitePerformedProcedureRepository:
+    def __init__(self, connection: sqlite3.Connection) -> None:
+        self.connection = connection
+
+    def add(self, procedure: PerformedProcedure) -> PerformedProcedure:
+        sequence = self.connection.execute(
+            "SELECT COALESCE(MAX(sequence),0)+1 FROM performed_procedures WHERE incident_id = ?",
+            (procedure.incident_id,),
+        ).fetchone()[0]
+        stored = procedure.model_copy(update={"sequence": sequence})
+        self.connection.execute(
+            "INSERT INTO performed_procedures(id,incident_id,sequence,description,result,"
+            "performed_at,actor_reference,suggested_action_id,suggested_action_version,suggested_action_digest) VALUES (?,?,?,?,?,?,?,?,?,?)",
+            (
+                stored.id,
+                stored.incident_id,
+                stored.sequence,
+                stored.description,
+                stored.result,
+                stored.performed_at.isoformat(),
+                stored.actor_reference,
+                stored.suggested_action_id,
+                stored.suggested_action_version,
+                stored.suggested_action_digest,
+            ),
+        )
+        return stored
+
+    def list(self, incident_id: str) -> tuple[PerformedProcedure, ...]:
+        found = self.connection.execute(
+            "SELECT id,incident_id,sequence,description,result,performed_at,actor_reference,"
+            "suggested_action_id,suggested_action_version,suggested_action_digest FROM performed_procedures WHERE incident_id = ? ORDER BY sequence",
+            (incident_id,),
+        ).fetchall()
+        return tuple(
+            PerformedProcedure(
+                id=row["id"],
+                incident_id=row["incident_id"],
+                sequence=row["sequence"],
+                description=row["description"],
+                result=row["result"],
+                performed_at=datetime.fromisoformat(row["performed_at"]),
+                actor_reference=row["actor_reference"],
+                suggested_action_id=row["suggested_action_id"],
+                suggested_action_version=row["suggested_action_version"],
+                suggested_action_digest=row["suggested_action_digest"],
+            )
+            for row in found
+        )
+
+
+class SQLiteDocumentationRepository:
+    def __init__(self, connection: sqlite3.Connection) -> None:
+        self.connection = connection
+
+    def add(self, document: IncidentDocumentation) -> IncidentDocumentation:
+        revision = self.connection.execute(
+            "SELECT COALESCE(MAX(revision),0)+1 FROM incident_documentation WHERE incident_id = ?",
+            (document.incident_id,),
+        ).fetchone()[0]
+        stored = document.model_copy(update={"revision": revision})
+        self.connection.execute(
+            "INSERT INTO incident_documentation(id,incident_id,revision,generated_at,generated_by,document_json) VALUES (?,?,?,?,?,?)",
+            (
+                stored.id,
+                stored.incident_id,
+                stored.revision,
+                stored.generated_at.isoformat(),
+                stored.generated_by,
+                stored.model_dump_json(),
+            ),
+        )
+        return stored
+
+    def list(self, incident_id: str) -> tuple[IncidentDocumentation, ...]:
+        found = self.connection.execute(
+            "SELECT document_json FROM incident_documentation WHERE incident_id = ? ORDER BY revision",
+            (incident_id,),
+        ).fetchall()
+        return tuple(
+            IncidentDocumentation.model_validate_json(row["document_json"])
+            for row in found
+        )
+
+    def get(self, incident_id: str, revision: int) -> IncidentDocumentation | None:
+        row = self.connection.execute(
+            "SELECT document_json FROM incident_documentation WHERE incident_id = ? AND revision = ?",
+            (incident_id, revision),
+        ).fetchone()
+        return (
+            IncidentDocumentation.model_validate_json(row["document_json"])
+            if row
+            else None
+        )
+
+    def latest(self, incident_id: str) -> IncidentDocumentation | None:
+        row = self.connection.execute(
+            "SELECT document_json FROM incident_documentation WHERE incident_id = ? ORDER BY revision DESC LIMIT 1",
+            (incident_id,),
+        ).fetchone()
+        return (
+            IncidentDocumentation.model_validate_json(row["document_json"])
+            if row
+            else None
+        )
 
 
 class SQLiteTriageRepository:

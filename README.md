@@ -88,3 +88,26 @@ supportops knowledge search "conta bloqueada" --format json
 An unmatched query succeeds with an empty result. Invalid queries and invalid
 corpora fail safely. The Markdown format, score weights, stable tie-break, and
 authoring rules are specified in `docs/support/knowledge-runbook-format.md`.
+
+## Persisted incident documentation and exports (0.5.0)
+
+Suggested actions and user-reported performed procedures are separate immutable
+records. Documentation generation reads only operational, non-deleted incident
+records and appends a nine-section revision. Missing information is stated
+neutrally; the application does not infer that a suggestion or approval was
+performed.
+
+```powershell
+supportops performed record INCIDENT_ID --description "Checked sync state" --result "Client was paused" --actor "n1"
+supportops performed list INCIDENT_ID --format json
+supportops document generate INCIDENT_ID --actor "n1"
+supportops document show INCIDENT_ID --revision 1 --format json
+supportops document history INCIDENT_ID
+supportops export INCIDENT_ID --revision 1 --format markdown
+supportops export INCIDENT_ID --revision 1 --format json --output json
+```
+
+Exports use the fixed `SUPPORTOPS_EXPORT_ROOT` (`exports` by default), opaque
+application-generated filenames, resolved-path containment, atomic publication,
+and no-overwrite semantics. CLI callers never provide a path or filename. Export
+JSON schema `1` contains provenance plus the exact persisted nine sections.

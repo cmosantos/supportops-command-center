@@ -23,10 +23,15 @@
   execution, restore and physical deletion remain absent.
 - Knowledge search is local, lexical, deterministic, read-only, and rooted in the
   packaged five-runbook corpus; it creates no authorization or execution path.
+- Performed procedures are user-reported immutable facts, remain separate from
+  suggestions/approvals, and never trigger execution.
+- Documentation/export is persisted-only, revisioned, limited to Markdown/JSON,
+  and contained beneath the configured application-owned export root.
 
 ## Gate
 
-ST-04 is Done after independent QA PASS with zero open Critical/High/Medium
-findings. The full regression passed with 192 tests and one environment-conditioned
-Windows symlink skip. Version `0.4.0` is ready for its authorized local commit on
-`main`; no Git remote is configured and Increment 5 has not started.
+ST-05 is Done after independent QA PASS with zero open Critical/High/Medium
+findings. The full regression passed with 218 tests and two environment-conditioned
+Windows symlink skips. Version `0.5.0` is ready for its authorized local commit on
+`main`; no Git remote is configured. Increment 6 follows automatically under the
+approved final V1 campaign; Increment 7 remains optional and excluded.

@@ -86,6 +86,21 @@ groups include `document`,
 `export`, and `dashboard`. Machine-readable JSON output will be available where
 needed for testing. The CLI contains no domain rules.
 
+## ST-05 implemented documentation contracts
+
+`DocumentationService.record_performed` appends a declared-actor report with
+clock timestamp and optional incident-scoped persisted action reference. It has
+no executor operation. `generate` reads incident, lifecycle, triage, approvals,
+and performed reports through repositories in one transaction and appends the
+next immutable revision. `get`/`history` exclude logically deleted incidents.
+
+`MarkdownIncidentExporter` and `JsonIncidentExporter` implement
+`IncidentExporter` and return bytes, media type, generated opaque filename,
+format, revision, and incident provenance without filesystem access.
+`ContainedExportWriter` alone publishes artifacts beneath the configured root;
+it validates names and containment and refuses collisions. The CLI delegates all
+assembly, serialization, and writing rules to these application boundaries.
+
 ## Streamlit contract
 
 Streamlit calls application services through the same composition root used by

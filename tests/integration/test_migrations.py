@@ -18,17 +18,17 @@ def test_status_nonexistent_is_non_mutating_and_init_is_idempotent(
     path = tmp_path / "supportops.db"
     runner = MigrationRunner(factory(path))
 
-    assert runner.status() == (0, (1, 2))
+    assert runner.status() == (0, (1, 2, 3))
     assert not path.exists()
-    assert runner.apply("2026-08-01T00:00:00+00:00") == 2
+    assert runner.apply("2026-08-01T00:00:00+00:00") == 3
     assert runner.apply("2026-08-01T00:00:01+00:00") == 0
-    assert runner.status() == (2, ())
+    assert runner.status() == (3, ())
 
     connection = factory(path).connect()
     try:
         assert (
             connection.execute("SELECT count(*) FROM schema_migrations").fetchone()[0]
-            == 2
+            == 3
         )
         assert connection.execute("PRAGMA foreign_keys").fetchone()[0] == 1
         assert connection.execute("PRAGMA busy_timeout").fetchone()[0] == 200
@@ -119,9 +119,9 @@ def test_existing_v1_database_receives_only_v2_in_order(tmp_path: Path) -> None:
     assert first_only.status() == (1, ())
 
     full = MigrationRunner(factory(path))
-    assert full.status() == (1, (2,))
-    assert full.apply("2026-08-01T00:00:01+00:00") == 1
-    assert full.status() == (2, ())
+    assert full.status() == (1, (2, 3))
+    assert full.apply("2026-08-01T00:00:01+00:00") == 2
+    assert full.status() == (3, ())
 
     connection = factory(path).connect()
     try:

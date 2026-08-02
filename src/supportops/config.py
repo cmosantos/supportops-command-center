@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     llm_enabled: Literal[False] = False
     db_path: Path = Path("data/supportops.db")
     db_busy_timeout_ms: int = Field(default=5000, ge=100, le=30000)
+    export_root: Path = Path("exports")
     triage_policy_path: Path | None = None
 
 

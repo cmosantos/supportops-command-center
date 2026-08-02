@@ -109,6 +109,38 @@ MIGRATIONS = (
             "CREATE INDEX ix_triage_incident_sequence ON triage_snapshots(incident_id, sequence)",
         ),
     ),
+    Migration(
+        3,
+        "performed procedures and immutable incident documentation",
+        (
+            """CREATE TABLE performed_procedures (
+                id TEXT PRIMARY KEY,
+                incident_id TEXT NOT NULL REFERENCES incidents(id) ON DELETE RESTRICT,
+                sequence INTEGER NOT NULL CHECK (sequence > 0),
+                description TEXT NOT NULL CHECK (length(trim(description)) > 0),
+                result TEXT NOT NULL CHECK (length(trim(result)) > 0),
+                performed_at TEXT NOT NULL,
+                actor_reference TEXT NOT NULL CHECK (length(trim(actor_reference)) > 0),
+                suggested_action_id TEXT,
+                suggested_action_version INTEGER CHECK (suggested_action_version >= 1),
+                suggested_action_digest TEXT CHECK (length(suggested_action_digest) = 64),
+                CHECK ((suggested_action_id IS NULL AND suggested_action_version IS NULL AND suggested_action_digest IS NULL)
+                    OR (suggested_action_id IS NOT NULL AND suggested_action_version IS NOT NULL AND suggested_action_digest IS NOT NULL)),
+                UNIQUE (incident_id, sequence)
+            )""",
+            """CREATE TABLE incident_documentation (
+                id TEXT PRIMARY KEY,
+                incident_id TEXT NOT NULL REFERENCES incidents(id) ON DELETE RESTRICT,
+                revision INTEGER NOT NULL CHECK (revision > 0),
+                generated_at TEXT NOT NULL,
+                generated_by TEXT NOT NULL CHECK (length(trim(generated_by)) > 0),
+                document_json TEXT NOT NULL CHECK (json_valid(document_json)),
+                UNIQUE (incident_id, revision)
+            )""",
+            "CREATE INDEX ix_performed_incident_sequence ON performed_procedures(incident_id, sequence)",
+            "CREATE INDEX ix_documentation_incident_revision ON incident_documentation(incident_id, revision)",
+        ),
+    ),
 )
 
 

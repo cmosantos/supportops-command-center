@@ -5,6 +5,13 @@ from pathlib import Path
 
 from supportops.config import Settings, get_settings
 from supportops.contracts import DiagnosticsProvider, VersionProvider
+from supportops.documentation_service import DocumentationService
+from supportops.domain.documentation import ExportFormat
+from supportops.exporters import (
+    ContainedExportWriter,
+    JsonIncidentExporter,
+    MarkdownIncidentExporter,
+)
 from supportops.knowledge_search import MarkdownKnowledgeSearch
 from supportops.knowledge_service import KnowledgeService
 from supportops.lifecycle import IncidentService
@@ -23,6 +30,7 @@ class Application:
     incident_service: IncidentService
     triage_service: TriageService
     knowledge_service: KnowledgeService
+    documentation_service: DocumentationService
 
 
 def build_application() -> Application:
@@ -40,4 +48,12 @@ def build_application() -> Application:
         incident_service=IncidentService(factory),
         triage_service=TriageService(factory, policy),
         knowledge_service=KnowledgeService(MarkdownKnowledgeSearch(knowledge_root)),
+        documentation_service=DocumentationService(
+            factory,
+            ContainedExportWriter(settings.export_root),
+            {
+                ExportFormat.MARKDOWN: MarkdownIncidentExporter(),
+                ExportFormat.JSON: JsonIncidentExporter(),
+            },
+        ),
     )

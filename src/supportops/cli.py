@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 """Canonical command-line interface; contains presentation logic and no SQL."""
 
 import argparse
@@ -10,6 +11,7 @@ from typing import Any
 from pydantic import ValidationError
 
 from supportops.bootstrap import Application, build_application
+from supportops.domain.documentation import ExportFormat, PerformedProcedureInput
 from supportops.domain.incidents import ApprovalInput, IncidentCreate, IncidentUpdate
 from supportops.domain.triage import TriageEvidence, TriageResult
 from supportops.errors import InputValidationError, SupportOpsError
@@ -106,6 +108,49 @@ def build_parser() -> argparse.ArgumentParser:
     record.add_argument("--decision", required=True)
     record.add_argument("--approver", required=True)
     record.add_argument("--note")
+
+    performed = commands.add_parser("performed", help="reported performed procedures")
+    performed_commands = performed.add_subparsers(
+        dest="performed_command", required=True
+    )
+    performed_record = performed_commands.add_parser("record")
+    performed_record.add_argument("incident_id")
+    performed_record.add_argument("--description", required=True)
+    performed_record.add_argument("--result", required=True)
+    performed_record.add_argument("--actor", required=True)
+    performed_record.add_argument("--suggested-action-id")
+    performed_record.add_argument("--suggested-action-version", type=int)
+    performed_record.add_argument("--suggested-action-digest")
+    performed_record.add_argument(
+        "--format", choices=("human", "json"), default="human"
+    )
+    performed_list = performed_commands.add_parser("list")
+    performed_list.add_argument("incident_id")
+    performed_list.add_argument("--format", choices=("human", "json"), default="human")
+
+    document = commands.add_parser("document", help="persisted incident documentation")
+    document_commands = document.add_subparsers(dest="document_command", required=True)
+    document_generate = document_commands.add_parser("generate")
+    document_generate.add_argument("incident_id")
+    document_generate.add_argument("--actor", required=True)
+    document_generate.add_argument(
+        "--format", choices=("human", "json"), default="human"
+    )
+    document_show = document_commands.add_parser("show")
+    document_show.add_argument("incident_id")
+    document_show.add_argument("--revision", type=int)
+    document_show.add_argument("--format", choices=("human", "json"), default="human")
+    document_history = document_commands.add_parser("history")
+    document_history.add_argument("incident_id")
+    document_history.add_argument(
+        "--format", choices=("human", "json"), default="human"
+    )
+
+    export = commands.add_parser("export", help="safe persisted documentation export")
+    export.add_argument("incident_id")
+    export.add_argument("--revision", type=int)
+    export.add_argument("--format", choices=("markdown", "json"), required=True)
+    export.add_argument("--output", choices=("human", "json"), default="human")
     return parser
 
 
@@ -156,6 +201,107 @@ def dispatch(args: argparse.Namespace, application: Application) -> int:
             )
         )
         _print_model(approval)
+    elif args.command == "performed":
+        return _dispatch_performed(args, application)
+    elif args.command == "document":
+        return _dispatch_document(args, application)
+    elif args.command == "export":
+        result = application.documentation_service.export(
+            args.incident_id, ExportFormat(args.format), args.revision
+        )
+        if args.output == "json":
+            _print_model(result)
+        else:
+            print(f"Exported {result.format.value} revision {result.revision}")
+            print(f"incident: {result.incident_id}")
+            print(f"media_type: {result.media_type}")
+            print(f"filename: {result.filename}")
+            print(f"relative_path: {result.relative_path}")
+    return 0
+
+
+def _dispatch_performed(args: argparse.Namespace, application: Application) -> int:
+    service = application.documentation_service
+    items: tuple[Any, ...]
+    if args.performed_command == "record":
+        items = (
+            service.record_performed(
+                args.incident_id,
+                PerformedProcedureInput(
+                    description=args.description,
+                    result=args.result,
+                    actor_reference=args.actor,
+                    suggested_action_id=args.suggested_action_id,
+                    suggested_action_version=args.suggested_action_version,
+                    suggested_action_digest=args.suggested_action_digest,
+                ),
+            ),
+        )
+    else:
+        items = service.list_performed(args.incident_id)
+    if args.format == "json":
+        print(
+            json.dumps(
+                [item.model_dump(mode="json") for item in items],
+                ensure_ascii=False,
+                sort_keys=True,
+            )
+        )
+    else:
+        if not items:
+            print("No performed procedures recorded.")
+        for item in items:
+            print(
+                f"performed id={item.id} incident={item.incident_id} "
+                f"sequence={item.sequence}"
+            )
+            print(f"performed_at: {item.performed_at.isoformat()}")
+            print(f"actor: {item.actor_reference}")
+            suggestion = (
+                f"{item.suggested_action_id}/v{item.suggested_action_version}/"
+                f"{item.suggested_action_digest}"
+                if item.suggested_action_id
+                else "none"
+            )
+            print(f"suggestion_reference: {suggestion}")
+            print(f"description: {item.description}")
+            print(f"result: {item.result}")
+    return 0
+
+
+def _dispatch_document(args: argparse.Namespace, application: Application) -> int:
+    service = application.documentation_service
+    items: tuple[Any, ...]
+    if args.document_command == "generate":
+        items = (service.generate(args.incident_id, args.actor),)
+    elif args.document_command == "history":
+        items = service.history(args.incident_id)
+    else:
+        items = (service.get(args.incident_id, args.revision),)
+    if args.format == "json":
+        payload: object = (
+            items[0].model_dump(mode="json")
+            if len(items) == 1
+            else [item.model_dump(mode="json") for item in items]
+        )
+        print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+    else:
+        for item in items:
+            print(
+                f"document={item.id} incident={item.incident_id} "
+                f"revision={item.revision}"
+            )
+            print(
+                f"generated_at={item.generated_at.isoformat()} "
+                f"generated_by={item.generated_by}"
+            )
+            for key, value in item.sections.model_dump().items():
+                print(f"{key}:")
+                if isinstance(value, tuple):
+                    for entry in value:
+                        print(f"- {entry}")
+                else:
+                    print(value)
     return 0
 
 
