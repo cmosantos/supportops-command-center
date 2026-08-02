@@ -141,6 +141,14 @@ MIGRATIONS = (
             "CREATE INDEX ix_documentation_incident_revision ON incident_documentation(incident_id, revision)",
         ),
     ),
+    Migration(
+        4,
+        "optional operator-declared incident category",
+        (
+            "ALTER TABLE incidents ADD COLUMN category TEXT CHECK (category IS NULL OR length(trim(category)) > 0)",
+            "CREATE INDEX ix_incidents_category_deleted ON incidents(category, deleted_at)",
+        ),
+    ),
 )
 
 

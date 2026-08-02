@@ -27,11 +27,15 @@
   suggestions/approvals, and never trigger execution.
 - Documentation/export is persisted-only, revisioned, limited to Markdown/JSON,
   and contained beneath the configured application-owned export root.
+- Streamlit is a thin presentation adapter over the shared Application façade;
+  it owns no SQL, filesystem, scoring, serialization, or business policy.
+- Incident category is explicit persisted input; it is never inferred from a
+  triage matrix rule ID.
 
 ## Gate
 
-ST-05 is Done after independent QA PASS with zero open Critical/High/Medium
-findings. The full regression passed with 218 tests and two environment-conditioned
-Windows symlink skips. Version `0.5.0` is ready for its authorized local commit on
-`main`; no Git remote is configured. Increment 6 follows automatically under the
-approved final V1 campaign; Increment 7 remains optional and excluded.
+ST-06 is Done after independent QA PASS with zero open Critical/High/Medium
+findings. The full regression passed with 245 tests and two environment-conditioned
+Windows symlink skips. Clean installed CLI and Streamlit smokes passed at version
+`0.6.0`. The local Increment 6 commit is authorized on `main`; no Git remote is
+configured. Increment 8 follows; Increment 7 remains optional and excluded.

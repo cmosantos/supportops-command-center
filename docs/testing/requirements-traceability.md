@@ -65,3 +65,11 @@ reported as passing in Phase 2.
 | Markdown/JSON adapters | ST-05 AC 12-15 | Determinism, strict JSON, Unicode, heading-order and hostile-content unit tests |
 | Fixed-root safe publication | ST-05 AC 16-18 | Traversal, absolute/drive/alternate path, invalid-root and collision security tests |
 | CLI and safe errors | ST-05 AC 19-22 | Performed/document/export CLI E2E plus complete ST-01–04 regression |
+# ST-06 traceability
+
+- Web/application boundary and safe imports: AC 2-4, 22-23 —
+  `tests/security/test_streamlit_boundary.py`.
+- Real SQLite dashboard, deleted exclusion, lifecycle duration, filtering, and
+  export content: AC 18-20 — `tests/integration/test_web_facade.py`.
+- Real Streamlit clean startup: AC 24-26 —
+  `tests/presentation/test_streamlit_app.py`.

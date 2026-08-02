@@ -100,3 +100,20 @@ No functional application component is implemented or claimed complete.
 - [x] Independent QA PASS: 25/25 acceptance criteria after administration;
   zero open Critical/High/Medium findings.
 - [x] Version `0.5.0`; no remote or push; Increment 6 authorized by campaign gate.
+
+## Phase 3 — Increment 6 complete
+
+- [x] ST-06 approved and implemented as a thin Streamlit presentation adapter.
+- [x] Streamlit 1.60.0 is bounded in project metadata and locked reproducibly.
+- [x] Shared Application façade exposes database, incident, triage, knowledge,
+  performed procedure, documentation/export, and dashboard workflows.
+- [x] Migration 4 adds explicit optional incident category without inference.
+- [x] All six dashboard measures are application-calculated from non-deleted data.
+- [x] Behavioral AppTests cover main flows, rerun idempotency, confirmation, safe
+  errors, and cross-incident session isolation.
+- [x] Real headless source and clean installed-wheel Streamlit smokes returned
+  HTTP 200 for health and page root on dynamic loopback ports.
+- [x] Ruff, strict MyPy, offline build/install, and regression passed:
+  245 passed, 2 environment-conditioned Windows symlink skips.
+- [x] Independent QA PASS: 30/30 AC after administration; zero open C/H/M.
+- [x] Version `0.6.0`; no remote/push; Increment 7 remains excluded; Increment 8 next.

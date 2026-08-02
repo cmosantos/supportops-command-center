@@ -107,6 +107,14 @@ Streamlit calls application services through the same composition root used by
 the CLI. It does not access SQLite directly, calculate priority, parse runbooks,
 or call Ollama directly. Dashboard screens are observational.
 
+Implemented in ST-06 by `SupportOpsFacade`, which owns database bootstrap,
+incident filters/detail/history and mutations, triage/search/history,
+performed/document/export views, and the exact `DashboardMetrics` snapshot.
+`streamlit_app` imports only the shared composition root, the façade request
+contract, safe application errors, Streamlit, and Pydantic validation errors.
+Export downloads receive bytes and safe metadata from the application without a
+path or presentation-layer file access.
+
 ## Approval contract
 
 Approval input must identify the incident, exact action ID/version/digest,

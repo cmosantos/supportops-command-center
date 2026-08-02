@@ -12,6 +12,7 @@ from pydantic import ValidationError
 from supportops.contracts import IncidentExporter
 from supportops.domain.documentation import (
     DocumentationSections,
+    ExportArtifact,
     ExportFormat,
     IncidentDocumentation,
     PerformedProcedure,
@@ -216,3 +217,13 @@ class DocumentationService:
         if exporter is None:
             raise InputValidationError("Unsupported export format.")
         return self.writer.write(exporter.export(document))
+
+    def export_content(
+        self, incident_id: str, export_format: ExportFormat, revision: int | None = None
+    ) -> ExportArtifact:
+        """Serialize a persisted revision for download without exposing filesystem APIs."""
+        document = self.get(incident_id, revision)
+        exporter = self.exporters.get(export_format)
+        if exporter is None:
+            raise InputValidationError("Unsupported export format.")
+        return exporter.export(document)

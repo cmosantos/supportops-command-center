@@ -27,6 +27,7 @@ class IncidentCreate(BaseModel):
     description: str = Field(min_length=1, max_length=10000)
     affected_party: str = Field(min_length=1, max_length=200)
     affected_service: str = Field(min_length=1, max_length=200)
+    category: str | None = Field(default=None, min_length=1, max_length=100)
     impact: Impact
     urgency: Urgency
     symptoms: str = Field(min_length=1, max_length=10000)
@@ -35,10 +36,17 @@ class IncidentCreate(BaseModel):
     actor_reference: str | None = Field(default=None, max_length=200)
 
     @field_validator(
-        "title", "description", "affected_party", "affected_service", "symptoms"
+        "title",
+        "description",
+        "affected_party",
+        "affected_service",
+        "category",
+        "symptoms",
     )
     @classmethod
-    def non_blank(cls, value: str) -> str:
+    def non_blank(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
         normalized = value.strip()
         if not normalized:
             raise ValueError("field must not be blank")
@@ -53,10 +61,16 @@ class IncidentUpdate(BaseModel):
     description: str | None = Field(default=None, min_length=1, max_length=10000)
     affected_party: str | None = Field(default=None, min_length=1, max_length=200)
     affected_service: str | None = Field(default=None, min_length=1, max_length=200)
+    category: str | None = Field(default=None, min_length=1, max_length=100)
     symptoms: str | None = Field(default=None, min_length=1, max_length=10000)
 
     @field_validator(
-        "title", "description", "affected_party", "affected_service", "symptoms"
+        "title",
+        "description",
+        "affected_party",
+        "affected_service",
+        "category",
+        "symptoms",
     )
     @classmethod
     def optional_non_blank(cls, value: str | None) -> str | None:
@@ -83,6 +97,7 @@ class Incident(BaseModel):
     description: str
     affected_party: str
     affected_service: str
+    category: str | None
     impact: Impact
     urgency: Urgency
     symptoms: str

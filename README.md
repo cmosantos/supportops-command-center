@@ -111,3 +111,16 @@ Exports use the fixed `SUPPORTOPS_EXPORT_ROOT` (`exports` by default), opaque
 application-generated filenames, resolved-path containment, atomic publication,
 and no-overwrite semantics. CLI callers never provide a path or filename. Export
 JSON schema `1` contains provenance plus the exact persisted nine sections.
+## Interface web local
+
+A interface Streamlit reutiliza a mesma composição e os mesmos casos de uso da
+CLI; ela não acessa SQLite, runbooks ou arquivos de exportação diretamente.
+
+```powershell
+uv run streamlit run src/supportops/streamlit_app.py
+```
+
+Use a navegação lateral para verificar o banco, operar incidentes e histórico,
+executar triagem determinística, buscar runbooks, registrar procedimentos
+realizados, gerar documentação/exportações e observar o dashboard. Procedimentos
+sugeridos são somente orientação e nunca são executados pela aplicação.

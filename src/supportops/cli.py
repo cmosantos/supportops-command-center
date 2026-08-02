@@ -48,6 +48,7 @@ def build_parser() -> argparse.ArgumentParser:
     create.add_argument("--error-message", action="append", default=[])
     create.add_argument("--action-taken", action="append", default=[])
     create.add_argument("--actor")
+    create.add_argument("--category")
     get = incident_commands.add_parser("get")
     get.add_argument("incident_id")
     incident_commands.add_parser("list")
@@ -60,6 +61,7 @@ def build_parser() -> argparse.ArgumentParser:
         "affected-party",
         "affected-service",
         "symptoms",
+        "category",
     ):
         update.add_argument(f"--{name}")
     update.add_argument("--actor")
@@ -340,6 +342,7 @@ def _dispatch_incident(args: argparse.Namespace, application: Application) -> in
                 description=args.description,
                 affected_party=args.affected_party,
                 affected_service=args.affected_service,
+                category=args.category,
                 impact=args.impact,
                 urgency=args.urgency,
                 symptoms=args.symptoms,
@@ -366,6 +369,7 @@ def _dispatch_incident(args: argparse.Namespace, application: Application) -> in
             description=args.description,
             affected_party=args.affected_party,
             affected_service=args.affected_service,
+            category=args.category,
             symptoms=args.symptoms,
         )
         _print_model(service.update(args.incident_id, data, args.actor))

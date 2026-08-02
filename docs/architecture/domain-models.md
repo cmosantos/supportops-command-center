@@ -135,6 +135,12 @@ Suggested procedures and performed procedures are separate collections.
 
 Default metrics exclude logically deleted incidents. The audit view is separate.
 
+ST-06 implements this as one application snapshot. Priority/category and
+escalation values come from the latest persisted triage snapshot; handling time
+uses the latest `closed_at - created_at` value of currently closed incidents.
+Empty databases return zero counts, empty ordered groups, and `None` for mean
+handling time.
+
 ## PriorityMatrixConfiguration
 
 - schema_version, matrix_version, effective_from, impact_values, urgency_values,

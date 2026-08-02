@@ -11,11 +11,18 @@ from supportops.domain.incidents import HumanApproval, Incident, IncidentEvent
 from supportops.domain.triage import TriageOutcome, TriageResult
 
 INCIDENT_COLUMNS = """id,title,description,affected_party,affected_service,impact,
-urgency,symptoms,error_messages_json,actions_taken_json,status,version,created_at,
+urgency,category,symptoms,error_messages_json,actions_taken_json,status,version,created_at,
 updated_at,closed_at,deleted_at,deletion_reason,deletion_confirmed,
 pre_deletion_status,created_by"""
 UPDATABLE_COLUMNS = frozenset(
-    {"title", "description", "affected_party", "affected_service", "symptoms"}
+    {
+        "title",
+        "description",
+        "affected_party",
+        "affected_service",
+        "category",
+        "symptoms",
+    }
 )
 
 
@@ -62,7 +69,7 @@ class SQLiteIncidentRepository:
 
     def add(self, incident: Incident) -> None:
         self.connection.execute(
-            f"INSERT INTO incidents({INCIDENT_COLUMNS}) VALUES ({','.join('?' for _ in range(20))})",  # noqa: S608
+            f"INSERT INTO incidents({INCIDENT_COLUMNS}) VALUES ({','.join('?' for _ in range(21))})",  # noqa: S608
             self._incident_values(incident),
         )
 
@@ -176,6 +183,7 @@ class SQLiteIncidentRepository:
             incident.affected_service,
             incident.impact.value,
             incident.urgency.value,
+            incident.category,
             incident.symptoms,
             json.dumps(incident.error_messages),
             json.dumps(incident.actions_already_taken),
@@ -203,6 +211,7 @@ class SQLiteIncidentRepository:
             affected_service=row["affected_service"],
             impact=row["impact"],
             urgency=row["urgency"],
+            category=row["category"],
             symptoms=row["symptoms"],
             error_messages=tuple(json.loads(row["error_messages_json"])),
             actions_already_taken=tuple(json.loads(row["actions_taken_json"])),
