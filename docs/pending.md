@@ -23,5 +23,7 @@
 
 ## Gate
 
-ST-03 implementation is in independent QA review. Increment 4 remains blocked
-until explicit human approval after the final ST-03 report.
+ST-03 is Done after independent QA PASS: 31/31 acceptance criteria and the full
+150/150 regression passed. Version `0.3.0` is committed as `4ac772e` on the clean
+`main` branch, with no Git remote configured. Increment 4 has not started and
+remains blocked until explicit human approval after the final ST-03 report.

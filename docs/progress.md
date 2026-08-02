@@ -57,7 +57,7 @@ No functional application component is implemented or claimed complete.
 - [x] Increment 3 policy/story preparation approved; implementation authorized.
 
 - [x] ST-02 QA blockers fixed: deterministic event sequence, APPROVED-only matching, fault-injection atomic rollback, and FK orphan rejection; 41 tests pass.
-## Phase 3 — Increment 3 in review
+## Phase 3 — Increment 3 complete
 
 - [x] Approved initial V1 policy packaged and validated fail-closed.
 - [x] All 16 matrix cells, priority invariants and deterministic routing implemented.
@@ -65,6 +65,8 @@ No functional application component is implemented or claimed complete.
 - [x] Migration 2 and immutable append-only triage snapshots implemented.
 - [x] CLI-first `triage run/history` human and JSON flows implemented.
 - [x] ST-01/ST-02 baseline preserved in the full regression suite.
-- [x] Ruff, strict MyPy and 150-test development gate passed.
-- [ ] Independent QA verdict and final evidence remain required before Done.
+- [x] Ruff, strict MyPy and full regression passed: 150/150 tests.
+- [x] Independent QA PASS: 31/31 acceptance criteria; zero Critical/High/Medium.
+- [x] Version `0.3.0` committed as `4ac772e` on branch `main`.
+- [x] Post-commit checkpoint verified clean, with no Git remote configured.
 - [ ] Increment 4 is not authorized and has not started.
