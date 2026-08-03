@@ -3,6 +3,10 @@
 </p>
 
 <p align="center">
+  <strong>English</strong> · <a href="README.pt-BR.md">Português</a>
+</p>
+
+<p align="center">
   <img alt="Version" src="https://img.shields.io/badge/version-1.0.0-4f46e5">
   <img alt="Python" src="https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white">
   <img alt="Streamlit" src="https://img.shields.io/badge/Streamlit-1.x-FF4B4B?logo=streamlit&logoColor=white">
@@ -39,9 +43,10 @@ The runtime is intentionally conservative:
 - it **does not require an LLM, embeddings, a vector database, or an external API**;
 - it **does not infer that a suggested procedure was actually performed**;
 - it keeps operator actions and generated revisions traceable in SQLite;
-- it uses the same application layer from both the CLI and Streamlit UI.
+- it uses the same application layer from both the CLI and Streamlit UI;
+- it provides a selectable **Portuguese and English interface**.
 
-> **V1 scope:** local single-node demonstration. Actor names are declared rather than authenticated, the interface and curated runbooks are Portuguese-first, and ticket-system integrations are intentionally out of scope.
+> **V1 scope:** local single-node demonstration. Actor names are declared rather than authenticated. The interface is bilingual, while the curated runbook corpus remains Portuguese-first. Ticket-system integrations are intentionally out of scope.
 
 ## Interface preview
 
@@ -71,7 +76,8 @@ Service-desk work is often scattered across ticket notes, personal troubleshooti
 - **explainable** — evidence gaps, runbook ranking, and decision rationale remain visible;
 - **auditable** — lifecycle events, triage snapshots, procedures, approvals, and document revisions are persisted;
 - **safe by design** — suggestions are content, never executable jobs;
-- **portable** — the application runs locally with Python or Docker Compose.
+- **portable** — the application runs locally with Python or Docker Compose;
+- **bilingual** — the operator can switch the interface between Portuguese and English.
 
 ## Capabilities
 
@@ -84,6 +90,7 @@ Service-desk work is often scattered across ticket notes, personal troubleshooti
 | Ticket documentation | Persisted nine-section revisions and GLPI/ServiceNow-ready text |
 | Safe exports | Atomic, non-overwriting Markdown and JSON exports with fixed-root containment |
 | Dashboard | Totals, open/closed counts, escalation count, handling time, priority groups, and category groups |
+| Bilingual interface | Portuguese/English selector across every operational Streamlit area |
 | Delivery | Python 3.12 package, CLI, Streamlit UI, SQLite migrations, Docker Compose, and GitHub Actions |
 
 ### Included runbooks
@@ -176,6 +183,12 @@ uv run supportops --help
 
 See the [installation guide](docs/guides/installation.md) and [usage guide](docs/guides/usage.md).
 
+## Language support
+
+The interface starts in Portuguese to preserve the existing product behavior. The **Idioma / Language** control in the sidebar switches the interface to English. The selection changes labels, forms, filters, messages, metrics, navigation areas, and operational actions.
+
+Operational data remains in the language in which it was entered. In this increment, the packaged runbooks remain in Portuguese. Localization is isolated from business rules so future languages or multilingual knowledge content can be added without changing deterministic triage behavior.
+
 ## Synthetic demo
 
 A complete synthetic flow is documented in [`docs/guides/demo.md`](docs/guides/demo.md). It covers:
@@ -199,7 +212,7 @@ SupportOps uses a modular monolith with ports and adapters. Presentation code de
 flowchart TB
     subgraph Presentation
       CLI[CLI]
-      UI[Streamlit UI]
+      UI[Bilingual Streamlit UI]
     end
 
     subgraph Application
@@ -264,7 +277,7 @@ git diff --check
 
 ```text
 supportops-command-center/
-├── src/supportops/              # Product code and packaged runbooks
+├── src/supportops/              # Product code, localization, and packaged runbooks
 ├── tests/                       # Unit, integration, CLI, presentation, security and smoke tests
 ├── docs/
 │   ├── architecture/            # Architecture, contracts, schema and ADRs
@@ -295,7 +308,7 @@ V1 is intentionally bounded:
 - local single-node SQLite;
 - declared actors without authentication or authorization;
 - irreversible logical deletion without restore;
-- Portuguese-first UI and runbook corpus;
+- Portuguese-first runbook corpus;
 - raw JSON triage input in Streamlit rather than guided fields;
 - lexical search without semantic embeddings;
 - no GLPI/ServiceNow API integration;
@@ -310,7 +323,7 @@ See [`docs/known-limitations.md`](docs/known-limitations.md) for details.
 Planned areas of exploration include:
 
 - guided, schema-aware triage forms and clearer validation feedback;
-- English localization and multilingual runbooks;
+- multilingual runbooks;
 - governed ticket-system integration;
 - authenticated actor identity and retention controls;
 - optional local Ollama experimentation behind a replaceable port, without weakening deterministic offline behavior or the no-execution boundary.
@@ -322,6 +335,7 @@ See [`docs/roadmap.md`](docs/roadmap.md).
 - Version: `1.0.0`
 - Branch prepared: `main`
 - Runtime: local Python or Docker Compose
+- Interface: Portuguese and English
 - External publication: human-controlled
 - GitHub release/tag: not created by the build campaign
 - License: not selected
