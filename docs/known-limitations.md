@@ -5,7 +5,8 @@
 - Logical deletion is irreversible in V1; there is no restore or physical purge.
 - Lexical search depends on curated terms and does not infer semantic synonyms.
 - The Streamlit triage screen accepts raw JSON rather than guided, schema-aware fields. Unknown schema fields are rejected and validation feedback is currently generic.
-- Public documentation is English, while the V1 interface and curated runbooks are Portuguese-first.
+- The Streamlit interface and repository landing documentation support Portuguese and English, while the curated runbook corpus remains Portuguese-first.
+- Operational records, generated content, and runbook excerpts remain in the language in which they were entered or authored; the interface does not automatically translate user data.
 - Operators own incident content quality and must avoid credentials and unnecessary personal information.
 - There is no GLPI/ServiceNow integration or SLA pause calculation.
 - No automatic data-retention policy exists; retention and backups are operator duties.
