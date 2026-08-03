@@ -1,6 +1,7 @@
 """Small, explicit localization catalog for the Streamlit presentation layer."""
 
-from typing import Final, Literal, Mapping
+from collections.abc import Mapping
+from typing import Final, Literal
 
 LanguageCode = Literal["pt-BR", "en"]
 
