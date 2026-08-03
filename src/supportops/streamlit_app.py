@@ -1,19 +1,15 @@
 # ruff: noqa: E501, SIM117
-"""Thin bilingual Streamlit presentation adapter for SupportOps V1."""
+"""Thin English Streamlit presentation adapter for SupportOps V1."""
 
 import streamlit as st
 from pydantic import ValidationError
 
 from supportops.bootstrap import build_application
 from supportops.errors import SupportOpsError
-from supportops.i18n import (
-    DEFAULT_LANGUAGE,
-    LANGUAGE_CODES,
-    LANGUAGE_OPTIONS,
-    LanguageCode,
-    translate,
-)
+from supportops.i18n import DEFAULT_LANGUAGE, LanguageCode, translate
 from supportops.web_facade import IncidentFilters
+
+PRODUCTION_LANGUAGE: LanguageCode = "en"
 
 
 def _safe_error(
@@ -38,14 +34,6 @@ def _incident_selector(web: object, language: LanguageCode) -> str | None:
     return options[selected]
 
 
-def _language_selector() -> LanguageCode:
-    selected = st.sidebar.selectbox(
-        translate(DEFAULT_LANGUAGE, "language_selector"),
-        LANGUAGE_OPTIONS,
-    )
-    return LANGUAGE_CODES[selected]
-
-
 def _severity_label(value: str, language: LanguageCode) -> str:
     return translate(language, f"impact_{value}")
 
@@ -58,14 +46,17 @@ def render() -> None:
         web = app.web
         status = web.bootstrap_database()
     except Exception as error:
-        st.error(_safe_error(error))
+        st.error(_safe_error(error, PRODUCTION_LANGUAGE))
         return
-    render_with_facade(web, status)
+    render_with_facade(web, status, language=PRODUCTION_LANGUAGE)
 
 
-def render_with_facade(web: object, status: object) -> None:
-    """Render the bilingual presentation over an injected application facade."""
-    language = _language_selector()
+def render_with_facade(
+    web: object,
+    status: object,
+    language: LanguageCode = DEFAULT_LANGUAGE,
+) -> None:
+    """Render the presentation over an injected application facade."""
     st.caption(
         translate(
             language,

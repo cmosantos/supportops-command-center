@@ -1,4 +1,4 @@
-"""Localization coverage for the Streamlit presentation layer."""
+"""Language coverage for the Streamlit presentation layer."""
 
 from datetime import UTC, datetime
 from types import SimpleNamespace
@@ -10,7 +10,7 @@ from supportops.web_facade import DatabaseStatus
 
 
 class DashboardFacade:
-    """Small facade used to validate both interface languages."""
+    """Small facade used to validate the English production interface."""
 
     def dashboard(self) -> SimpleNamespace:
         return SimpleNamespace(
@@ -31,10 +31,10 @@ class DashboardFacade:
         return ()
 
 
-def injected_entry(web: object, status: object) -> None:
-    from supportops.streamlit_app import render_with_facade
+def production_entry(web: object, status: object) -> None:
+    from supportops.streamlit_app import PRODUCTION_LANGUAGE, render_with_facade
 
-    render_with_facade(web, status)
+    render_with_facade(web, status, language=PRODUCTION_LANGUAGE)
 
 
 def test_portuguese_and_english_catalogs_have_identical_keys() -> None:
@@ -43,39 +43,35 @@ def test_portuguese_and_english_catalogs_have_identical_keys() -> None:
     assert translate("en", "page_incidents") == "Incidents"
 
 
-def test_dashboard_switches_from_portuguese_to_english() -> None:
+def test_production_dashboard_is_english_only() -> None:
     at = AppTest.from_function(
-        injected_entry,
+        production_entry,
         args=(DashboardFacade(), DatabaseStatus(4, (), 0)),
         default_timeout=10,
     ).run()
 
-    assert at.sidebar.selectbox[0].value == "Português"
-    assert at.metric[0].label == "Total de incidentes"
-    assert at.sidebar.radio[0].label == "Área"
-
-    at.sidebar.selectbox[0].set_value("English").run()
-
+    assert not at.sidebar.selectbox
     assert at.metric[0].label == "Total incidents"
     assert at.sidebar.radio[0].label == "Area"
     assert "Incidents" in at.sidebar.radio[0].options
     assert any("pending migrations" in item.value for item in at.caption)
 
 
-def test_language_switch_preserves_current_page() -> None:
+def test_english_navigation_preserves_current_page() -> None:
     at = AppTest.from_function(
-        injected_entry,
+        production_entry,
         args=(DashboardFacade(), DatabaseStatus(4, (), 0)),
         default_timeout=10,
     ).run()
 
-    at.sidebar.radio[0].set_value("Incidentes").run()
-    assert any(header.value == "Incidentes" for header in at.header)
-    assert any(info.value == "Nenhum incidente encontrado." for info in at.info)
-
-    at.sidebar.selectbox[0].set_value("English").run()
+    at.sidebar.radio[0].set_value("Incidents").run()
 
     assert at.sidebar.radio[0].value == "Incidents"
     assert any(header.value == "Incidents" for header in at.header)
     assert any(info.value == "No incidents found." for info in at.info)
     assert not at.metric
+
+    at.run()
+
+    assert at.sidebar.radio[0].value == "Incidents"
+    assert any(header.value == "Incidents" for header in at.header)
