@@ -81,8 +81,17 @@ def render_with_facade(web: object, status: object) -> None:
         "knowledge": translate(language, "page_knowledge"),
         "documents": translate(language, "page_documents"),
     }
-    selected_page = st.sidebar.radio(translate(language, "area"), tuple(pages.values()))
+    page_keys = tuple(pages)
+    current_page = st.session_state.get("supportops_current_page", "dashboard")
+    if current_page not in pages:
+        current_page = "dashboard"
+    selected_page = st.sidebar.radio(
+        translate(language, "area"),
+        tuple(pages.values()),
+        index=page_keys.index(current_page),
+    )
     page = next(key for key, label in pages.items() if label == selected_page)
+    st.session_state["supportops_current_page"] = page
     try:
         if page == "dashboard":
             _dashboard(web, language)
