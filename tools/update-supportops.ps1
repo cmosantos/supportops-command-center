@@ -4,6 +4,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
+$RepositoryUrl = "https://github.com/cmosantos/supportops-command-center.git"
 
 function Write-Step {
     param([string]$Message)
@@ -22,13 +23,24 @@ function Invoke-Native {
     }
 }
 
-function Resolve-ProjectPath {
+function Test-SupportOpsRepository {
+    param([string]$Candidate)
+
+    return (
+        (Test-Path -LiteralPath $Candidate -PathType Container) -and
+        (Test-Path -LiteralPath (Join-Path $Candidate ".git") -PathType Container) -and
+        (Test-Path -LiteralPath (Join-Path $Candidate "compose.yaml") -PathType Leaf)
+    )
+}
+
+function Resolve-Or-CloneProject {
     param([string]$RequestedPath)
 
     $candidates = @(
         $RequestedPath,
         (Join-Path $RequestedPath "supportops-command-center"),
         (Join-Path $HOME "supportops-command-center"),
+        (Join-Path $HOME "SupportOps\supportops-command-center"),
         (Join-Path $HOME "Desktop\supportops-command-center"),
         (Join-Path $HOME "Documents\supportops-command-center"),
         (Join-Path $HOME "Downloads\supportops-command-center"),
@@ -39,20 +51,43 @@ function Resolve-ProjectPath {
     ) | Select-Object -Unique
 
     foreach ($candidate in $candidates) {
-        if ((Test-Path -LiteralPath $candidate -PathType Container) -and
-            (Test-Path -LiteralPath (Join-Path $candidate ".git") -PathType Container)) {
+        if (Test-SupportOpsRepository -Candidate $candidate) {
             return (Resolve-Path -LiteralPath $candidate).Path
         }
     }
 
-    throw "SupportOps repository not found. Open CMD inside the supportops-command-center folder and run the command again."
+    Write-Host "No local SupportOps repository was found." -ForegroundColor Yellow
+    Write-Host "A clean copy will be downloaded automatically." -ForegroundColor Yellow
+
+    $managedRoot = Join-Path $HOME "SupportOps"
+    New-Item -ItemType Directory -Path $managedRoot -Force | Out-Null
+    $cloneTarget = Join-Path $managedRoot "supportops-command-center"
+
+    if (Test-Path -LiteralPath $cloneTarget) {
+        if (Test-SupportOpsRepository -Candidate $cloneTarget) {
+            return (Resolve-Path -LiteralPath $cloneTarget).Path
+        }
+
+        $cloneTarget = Join-Path $managedRoot (
+            "supportops-command-center-" + (Get-Date -Format "yyyyMMdd-HHmmss")
+        )
+    }
+
+    Write-Step "Downloading a clean SupportOps repository"
+    Invoke-Native git clone $RepositoryUrl $cloneTarget
+
+    if (-not (Test-SupportOpsRepository -Candidate $cloneTarget)) {
+        throw "The clean SupportOps repository could not be prepared."
+    }
+
+    return (Resolve-Path -LiteralPath $cloneTarget).Path
 }
 
 try {
     $Host.UI.RawUI.WindowTitle = "SupportOps - Full update"
 
     Write-Host "SupportOps Command Center - automatic update" -ForegroundColor Green
-    Write-Host "This process preserves local changes in a Git stash before updating." -ForegroundColor DarkGray
+    Write-Host "This process preserves local changes before updating." -ForegroundColor DarkGray
 
     foreach ($requiredCommand in @("git", "docker")) {
         if (-not (Get-Command $requiredCommand -ErrorAction SilentlyContinue)) {
@@ -60,8 +95,8 @@ try {
         }
     }
 
-    Write-Step "Locating the project"
-    $resolvedProjectPath = Resolve-ProjectPath -RequestedPath $ProjectPath
+    Write-Step "Locating or downloading the project"
+    $resolvedProjectPath = Resolve-Or-CloneProject -RequestedPath $ProjectPath
     Set-Location -LiteralPath $resolvedProjectPath
     Write-Host "Project: $resolvedProjectPath"
 
@@ -85,6 +120,14 @@ try {
     }
 
     Write-Step "Synchronizing the exact GitHub main branch"
+    $originUrl = (& git remote get-url origin).Trim()
+    if ($LASTEXITCODE -ne 0) {
+        throw "The Git origin remote could not be read."
+    }
+    if ($originUrl -notmatch "cmosantos/supportops-command-center") {
+        Invoke-Native git remote set-url origin $RepositoryUrl
+    }
+
     Invoke-Native git fetch --prune origin main
     Invoke-Native git switch main
     Invoke-Native git reset --hard origin/main
@@ -110,7 +153,7 @@ try {
         Write-Host "No removable old image was found; continuing."
     }
 
-    Write-Step "Building SupportOps from scratch (no Docker cache)"
+    Write-Step "Building SupportOps from scratch without Docker cache"
     Invoke-Native docker compose build --pull --no-cache app
 
     Write-Step "Starting a fresh SupportOps container"
@@ -119,7 +162,7 @@ try {
     Write-Step "Waiting for the application health check"
     $healthUrl = "http://127.0.0.1:8501/_stcore/health"
     $ready = $false
-    for ($attempt = 1; $attempt -le 45; $attempt++) {
+    for ($attempt = 1; $attempt -le 60; $attempt++) {
         try {
             $response = Invoke-WebRequest -UseBasicParsing -Uri $healthUrl -TimeoutSec 2
             if ($response.StatusCode -eq 200) {
@@ -134,14 +177,14 @@ try {
 
     if (-not $ready) {
         & docker compose ps
-        & docker compose logs --tail 80 app
+        & docker compose logs --tail 100 app
         throw "SupportOps did not become healthy. The latest container logs are shown above."
     }
 
     Write-Step "Update completed"
     & docker compose ps
     Write-Host "SupportOps is running from commit $commit." -ForegroundColor Green
-    Write-Host "The production interface is fixed to English." -ForegroundColor Green
+    Write-Host "The production interface is English-only." -ForegroundColor Green
 
     $appUrl = "http://127.0.0.1:8501/?updated=$commit"
     Start-Process $appUrl
