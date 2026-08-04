@@ -24,10 +24,10 @@ _WEIGHTS = {
 }
 _MAX_LIMIT = 100
 _REQUIRED_HEADINGS = (
-    "# Objetivo",
-    "## Evidências seguras",
-    "## Orientação não executável",
-    "## Pare e escale",
+    "# Objective",
+    "## Safe evidence",
+    "## Non-executable guidance",
+    "## Stop and escalate",
 )
 
 
