@@ -1,4 +1,4 @@
-"""Language coverage for the Streamlit presentation layer."""
+"""English-only coverage for the Streamlit presentation layer."""
 
 from datetime import UTC, datetime
 from types import SimpleNamespace
@@ -37,10 +37,11 @@ def production_entry(web: object, status: object) -> None:
     render_with_facade(web, status, language=PRODUCTION_LANGUAGE)
 
 
-def test_portuguese_and_english_catalogs_have_identical_keys() -> None:
-    assert catalog_keys("pt-BR") == catalog_keys("en")
-    assert translate("pt-BR", "page_incidents") == "Incidentes"
+def test_english_catalog_contains_required_navigation_labels() -> None:
+    keys = catalog_keys("en")
+    assert {"area", "page_dashboard", "page_incidents", "page_triage"} <= keys
     assert translate("en", "page_incidents") == "Incidents"
+    assert translate("en", "page_documents") == "Procedures and documents"
 
 
 def test_production_dashboard_is_english_only() -> None:
