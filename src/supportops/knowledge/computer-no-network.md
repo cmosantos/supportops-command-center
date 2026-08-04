@@ -1,28 +1,28 @@
 +++
 id = "computer-no-network"
-title = "Computador sem acesso à rede"
-aliases = ["sem internet", "rede indisponível", "offline"]
-category = "Conectividade"
-symptoms = ["Computador não acessa recursos internos", "Conexão aparece desconectada"]
-keywords = ["rede", "Wi-Fi", "Ethernet", "DNS", "VPN"]
-risk_notes = ["Não alterar configuração de rede administrativa", "Não desativar controles de segurança"]
-escalation_criteria = ["Múltiplos usuários afetados", "Suspeita de incidente de segurança"]
+title = "Computer without network access"
+aliases = ["no internet", "network unavailable", "offline computer"]
+category = "Connectivity"
+symptoms = ["The computer cannot access internal resources", "The connection appears disconnected"]
+keywords = ["network", "Wi-Fi", "Ethernet", "DNS", "VPN"]
+risk_notes = ["Do not change administrative network settings", "Do not disable security controls"]
+escalation_criteria = ["Multiple users are affected", "A security incident is suspected"]
 revision = "1.0.0"
 +++
-# Objetivo
+# Objective
 
-Orientar diagnóstico observacional de computador sem acesso à rede.
+Guide an observational diagnosis of a computer without network access.
 
-## Evidências seguras
+## Safe evidence
 
-- Identifique se a conexão é Wi-Fi, Ethernet ou VPN e quais serviços estão afetados.
-- Observe indicadores físicos, estado exibido pelo sistema e se outros dispositivos autorizados funcionam.
-- Registre horário e mensagens genéricas, sem executar comandos administrativos.
+- Identify whether the connection uses Wi-Fi, Ethernet, or VPN and which services are affected.
+- Observe physical indicators, the operating-system status, and whether other authorized devices work.
+- Record the time and generic messages without running administrative commands.
 
-## Orientação não executável
+## Non-executable guidance
 
-Confira cabos, modo avião e seleção da rede conforme procedimentos do local. Encaminhe testes de DNS, endereço IP ou equipamento à equipe autorizada.
+Check cables, airplane mode, and the selected network according to local procedures. Route DNS, IP address, or network-equipment tests to the authorized team.
 
-## Pare e escale
+## Stop and escalate
 
-Escale quando o impacto for coletivo, houver alertas de segurança ou a correção exigir privilégio.
+Escalate when the impact is widespread, security alerts are present, or remediation requires elevated privilege.

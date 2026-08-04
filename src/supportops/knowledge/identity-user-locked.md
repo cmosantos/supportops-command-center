@@ -1,28 +1,28 @@
 +++
 id = "identity-user-locked"
-title = "Usuário bloqueado no Active Directory ou Entra ID"
-aliases = ["conta bloqueada", "account locked", "bloqueio no AD"]
-category = "Identidade"
-symptoms = ["Usuário não consegue entrar", "Mensagem de conta bloqueada"]
-keywords = ["Active Directory", "Entra ID", "login", "bloqueio"]
-risk_notes = ["Não desbloquear sem validar identidade", "Não coletar senha ou MFA"]
-escalation_criteria = ["Bloqueios recorrentes", "Sinais de tentativa de acesso indevido"]
+title = "User locked in Active Directory or Entra ID"
+aliases = ["account locked", "locked user", "Active Directory lockout"]
+category = "Identity"
+symptoms = ["The user cannot sign in", "A locked-account message is displayed"]
+keywords = ["Active Directory", "Entra ID", "login", "lockout"]
+risk_notes = ["Do not unlock the account before validating identity", "Do not collect passwords or MFA codes"]
+escalation_criteria = ["Repeated lockouts", "Signs of unauthorized access attempts"]
 revision = "1.0.0"
 +++
-# Objetivo
+# Objective
 
-Orientar a triagem segura de conta bloqueada sem executar desbloqueio administrativo.
+Guide the safe triage of a locked account without performing an administrative unlock.
 
-## Evidências seguras
+## Safe evidence
 
-- Registre o horário, o serviço afetado e a mensagem genérica apresentada.
-- Confirme se o bloqueio ocorre em um ou vários serviços corporativos.
-- Solicite à equipe autorizada a consulta dos eventos de identidade, sem copiar tokens ou dados sensíveis.
+- Record the time, the affected service, and the generic message shown to the user.
+- Confirm whether the lockout affects one or several corporate services.
+- Ask the authorized team to review identity events without copying tokens or sensitive data.
 
-## Orientação não executável
+## Non-executable guidance
 
-Valide a identidade pelo processo corporativo e encaminhe o desbloqueio do Active Directory ou Entra ID ao operador autorizado. Revise dispositivos com credenciais antigas.
+Validate identity through the corporate process and route the Active Directory or Entra ID unlock to an authorized operator. Review devices that may still store old credentials.
 
-## Pare e escale
+## Stop and escalate
 
-Escale imediatamente diante de MFA inesperado, origem desconhecida ou bloqueio recorrente.
+Escalate immediately when there is unexpected MFA activity, an unknown source, or repeated lockouts.

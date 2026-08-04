@@ -12,22 +12,22 @@ from supportops.knowledge_search import (
 )
 
 
-def canonical_body(objective: str = "Colete evidência de rede com segurança.") -> str:
-    return f"""# Objetivo
+def canonical_body(objective: str = "Collect network evidence safely.") -> str:
+    return f"""# Objective
 
 {objective}
 
-## Evidências seguras
+## Safe evidence
 
-- Registre evidências sem dados sensíveis.
+- Record evidence without sensitive data.
 
-## Orientação não executável
+## Non-executable guidance
 
-Encaminhe a ação à equipe autorizada.
+Route the action to the authorized team.
 
-## Pare e escale
+## Stop and escalate
 
-Pare quando houver risco ou privilégio administrativo.
+Stop when there is risk or a need for administrative privilege.
 """
 
 
@@ -35,9 +35,9 @@ def write_runbook(
     root: Path,
     *,
     document_id: str = "sample-runbook",
-    title: str = "Rede indisponível",
-    aliases: str = '["sem internet"]',
-    symptoms: str = '["conexão caída"]',
+    title: str = "Network unavailable",
+    aliases: str = '["no internet"]',
+    symptoms: str = '["connection down"]',
     keywords: str = '["wifi"]',
     body: str | None = None,
     filename: str = "sample.md",
@@ -50,11 +50,11 @@ def write_runbook(
 id = "{document_id}"
 title = "{title}"
 aliases = {aliases}
-category = "Conectividade"
+category = "Connectivity"
 symptoms = {symptoms}
 keywords = {keywords}
-risk_notes = ["não executar comandos"]
-escalation_criteria = ["impacto coletivo"]
+risk_notes = ["do not run commands"]
+escalation_criteria = ["widespread impact"]
 revision = "1.0.0"
 +++
 {body}
@@ -65,18 +65,18 @@ revision = "1.0.0"
 
 
 def test_normalization_is_case_and_accent_insensitive() -> None:
-    assert normalize_text("SINCRONIZAÇÃO, Usuário!") == "sincronizacao usuario"
-    assert query_terms("Rede rede WI-FI") == ("fi", "rede", "wi")
+    assert normalize_text("RÉSUMÉ, User!") == "resume user"
+    assert query_terms("Network network WI-FI") == ("fi", "network", "wi")
 
 
 @pytest.mark.parametrize(
     ("query", "score"),
     [
-        ("indisponível", 50),
+        ("unavailable", 50),
         ("internet", 40),
-        ("caída", 30),
+        ("down", 30),
         ("wifi", 25),
-        ("evidência", 10),
+        ("evidence", 10),
     ],
 )
 def test_each_searchable_field_contributes_weight(
@@ -91,23 +91,23 @@ def test_each_searchable_field_contributes_weight(
 def test_duplicate_query_terms_count_once(tmp_path: Path) -> None:
     write_runbook(
         tmp_path,
-        title="Rede",
-        aliases='["rede"]',
-        symptoms='["rede"]',
-        keywords='["rede"]',
-        body=canonical_body("Rede"),
+        title="Network",
+        aliases='["network"]',
+        symptoms='["network"]',
+        keywords='["network"]',
+        body=canonical_body("Network"),
     )
-    result = MarkdownKnowledgeSearch(tmp_path).search("REDE rede réde")[0]
+    result = MarkdownKnowledgeSearch(tmp_path).search("NETWORK network nétwork")[0]
     assert result.score == 155
-    assert result.matched_terms == ("rede",)
+    assert result.matched_terms == ("network",)
 
 
 def test_ranking_tie_break_and_json_are_repeatable(tmp_path: Path) -> None:
-    write_runbook(tmp_path, document_id="zeta", title="Beta rede", filename="z.md")
-    write_runbook(tmp_path, document_id="alpha", title="Álfa rede", filename="a.md")
+    write_runbook(tmp_path, document_id="zeta", title="Beta network", filename="z.md")
+    write_runbook(tmp_path, document_id="alpha", title="Álpha network", filename="a.md")
     adapter = MarkdownKnowledgeSearch(tmp_path)
-    first = adapter.search("rede")
-    second = adapter.search("RÉDE")
+    first = adapter.search("network")
+    second = adapter.search("NÉTWORK")
     assert [item.id for item in first] == ["alpha", "zeta"]
     assert json.dumps(
         [item.model_dump() for item in first], sort_keys=True
@@ -116,13 +116,13 @@ def test_ranking_tie_break_and_json_are_repeatable(tmp_path: Path) -> None:
 
 def test_no_result_is_empty(tmp_path: Path) -> None:
     write_runbook(tmp_path)
-    assert MarkdownKnowledgeSearch(tmp_path).search("inexistente") == ()
+    assert MarkdownKnowledgeSearch(tmp_path).search("missing") == ()
 
 
 def test_excerpt_omits_markdown_heading(tmp_path: Path) -> None:
-    write_runbook(tmp_path, body=canonical_body("Colete evidência segura."))
+    write_runbook(tmp_path, body=canonical_body("Collect safe evidence."))
     result = MarkdownKnowledgeSearch(tmp_path).search("internet")[0]
-    assert result.excerpt == "Colete evidência segura."
+    assert result.excerpt == "Collect safe evidence."
 
 
 @pytest.mark.parametrize("query", ["", "   ", "!!!", "\u0301"])
@@ -157,23 +157,23 @@ def test_invalid_content_fails_closed(tmp_path: Path, invalid: str) -> None:
     write_runbook(tmp_path)
     (tmp_path / "invalid.md").write_text(invalid, encoding="utf-8")
     with pytest.raises(KnowledgeError, match="invalid runbook"):
-        MarkdownKnowledgeSearch(tmp_path).search("rede")
+        MarkdownKnowledgeSearch(tmp_path).search("network")
 
 
 @pytest.mark.parametrize(
     "body",
     [
         canonical_body().replace(
-            "## Evidências seguras\n\n- Registre evidências sem dados sensíveis.\n\n",
+            "## Safe evidence\n\n- Record evidence without sensitive data.\n\n",
             "",
         ),
         canonical_body().replace(
-            "## Evidências seguras\n\n- Registre evidências sem dados sensíveis.",
-            "## Evidências seguras",
+            "## Safe evidence\n\n- Record evidence without sensitive data.",
+            "## Safe evidence",
         ),
-        canonical_body() + "\n## Pare e escale\n\nDuplicada.",
-        "# Objetivo\n## Evidências seguras\n"
-        "## Orientação não executável\n## Pare e escale",
+        canonical_body() + "\n## Stop and escalate\n\nDuplicate.",
+        "# Objective\n## Safe evidence\n"
+        "## Non-executable guidance\n## Stop and escalate",
     ],
     ids=("missing", "empty", "duplicate", "headings-only"),
 )
@@ -190,7 +190,7 @@ def test_empty_corpus_fails_closed(tmp_path: Path, operation: str) -> None:
         if operation == "health":
             adapter.health()
         elif operation == "search":
-            adapter.search("rede")
+            adapter.search("network")
         else:
             adapter.get("sample-runbook")
 

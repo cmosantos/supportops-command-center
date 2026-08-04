@@ -17,10 +17,10 @@ def test_packaged_corpus_has_exactly_five_valid_runbooks() -> None:
     ("query", "document_id"),
     [
         ("shared mailbox", "shared-mailbox-access-denied"),
-        ("conta bloqueada", "identity-user-locked"),
-        ("sync pendente", "onedrive-not-syncing"),
-        ("sem internet", "computer-no-network"),
-        ("biblioteca bloqueada", "sharepoint-access-denied"),
+        ("account locked", "identity-user-locked"),
+        ("sync pending", "onedrive-not-syncing"),
+        ("no internet", "computer-no-network"),
+        ("blocked library", "sharepoint-access-denied"),
     ],
 )
 def test_each_mandatory_runbook_is_retrievable(query: str, document_id: str) -> None:

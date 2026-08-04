@@ -1,28 +1,28 @@
 +++
 id = "shared-mailbox-access-denied"
-title = "Acesso negado à caixa compartilhada no Outlook"
-aliases = ["caixa compartilhada", "shared mailbox", "Outlook sem permissão"]
+title = "Shared mailbox access denied in Outlook"
+aliases = ["shared mailbox", "mailbox access denied", "Outlook permission error"]
 category = "Microsoft 365"
-symptoms = ["Acesso negado ao abrir a caixa", "A caixa não aparece no Outlook"]
-keywords = ["Outlook", "mailbox", "permissão", "automapping"]
-risk_notes = ["Não alterar permissões sem autorização", "Não solicitar credenciais"]
-escalation_criteria = ["Permissão ausente ou divergente", "Falha persiste em mais de um cliente"]
+symptoms = ["Access denied when opening the mailbox", "The mailbox does not appear in Outlook"]
+keywords = ["Outlook", "mailbox", "permission", "automapping"]
+risk_notes = ["Do not change permissions without authorization", "Do not request credentials"]
+escalation_criteria = ["Permission is missing or inconsistent", "The issue persists in more than one client"]
 revision = "1.0.0"
 +++
-# Objetivo
+# Objective
 
-Orientar a coleta segura de evidências quando uma caixa compartilhada apresenta acesso negado.
+Guide safe evidence collection when access to a shared mailbox is denied.
 
-## Evidências seguras
+## Safe evidence
 
-- Registre a mensagem exibida, o horário e se a caixa aparece no Outlook Web.
-- Confirme com o responsável apenas o nome corporativo da caixa e o tipo de acesso esperado.
-- Compare o comportamento em uma sessão autorizada do Outlook Web, sem coletar senha ou token.
+- Record the displayed message, the time, and whether the mailbox appears in Outlook on the web.
+- Confirm only the corporate mailbox name and the expected access type with the responsible owner.
+- Compare the behavior in an authorized Outlook on the web session without collecting a password or token.
 
-## Orientação não executável
+## Non-executable guidance
 
-Verifique se a solicitação de acesso foi aprovada e encaminhe a conferência de Full Access e automapping à equipe autorizada. Não execute PowerShell nem altere delegações.
+Confirm that the access request was approved and route the Full Access and automapping verification to the authorized team. Do not run PowerShell or change delegation settings.
 
-## Pare e escale
+## Stop and escalate
 
-Interrompa se houver suspeita de comprometimento, acesso a dados indevidos ou necessidade de privilégio administrativo.
+Stop if there is suspected compromise, possible access to unauthorized data, or any need for administrative privilege.

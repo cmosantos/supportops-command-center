@@ -1,128 +1,13 @@
-"""Small, explicit localization catalog for the Streamlit presentation layer."""
+"""English presentation strings for the Streamlit interface."""
 
 from collections.abc import Mapping
 from typing import Final, Literal
 
-LanguageCode = Literal["pt-BR", "en"]
-
-DEFAULT_LANGUAGE: Final[LanguageCode] = "pt-BR"
-LANGUAGE_OPTIONS: Final[tuple[str, ...]] = ("Português", "English")
-LANGUAGE_CODES: Final[Mapping[str, LanguageCode]] = {
-    "Português": "pt-BR",
-    "English": "en",
-}
+LanguageCode = Literal["en"]
+DEFAULT_LANGUAGE: Final[LanguageCode] = "en"
 
 CATALOGS: Final[Mapping[LanguageCode, Mapping[str, str]]] = {
-    "pt-BR": {
-        "language_selector": "Idioma / Language",
-        "db_status": "Banco v{version}; migrações pendentes: {pending}",
-        "area": "Área",
-        "page_dashboard": "Dashboard",
-        "page_incidents": "Incidentes",
-        "page_triage": "Triagem",
-        "page_knowledge": "Conhecimento",
-        "page_documents": "Procedimentos e documentos",
-        "validation_error": "Revise os campos informados e tente novamente.",
-        "safe_error": "A operação falhou com segurança. Tente novamente.",
-        "no_incidents": "Nenhum incidente operacional disponível.",
-        "incident": "Incidente",
-        "metric_total": "Total de incidentes",
-        "metric_open": "Abertos",
-        "metric_closed": "Encerrados",
-        "metric_escalations": "Escalonamentos",
-        "mean_handling_time": "Tempo médio de atendimento",
-        "no_data": "Sem dados",
-        "seconds": "{value:.0f} s",
-        "by_priority": "Por prioridade",
-        "by_category": "Por categoria",
-        "snapshot": "Snapshot: {timestamp}",
-        "register_incident": "Cadastrar incidente",
-        "title": "Título",
-        "description": "Descrição",
-        "affected_party": "Parte afetada",
-        "affected_service": "Serviço afetado",
-        "impact": "Impacto",
-        "urgency": "Urgência",
-        "symptoms": "Sintomas",
-        "category": "Categoria",
-        "actor": "Ator",
-        "register": "Cadastrar",
-        "incident_registered": "Incidente cadastrado.",
-        "filter_text": "Filtrar texto",
-        "filter_status": "Filtrar status",
-        "filter_priority": "Filtrar prioridade",
-        "filter_category": "Filtrar categoria",
-        "status_all": "Todos",
-        "status_open": "OPEN",
-        "status_closed": "CLOSED",
-        "priority_all": "Todos",
-        "no_incidents_found": "Nenhum incidente encontrado.",
-        "field_id": "id",
-        "field_status": "status",
-        "field_priority": "prioridade",
-        "field_category": "categoria",
-        "new_title": "Novo título",
-        "new_description": "Nova descrição",
-        "new_affected_party": "Nova parte afetada",
-        "new_affected_service": "Novo serviço afetado",
-        "new_symptoms": "Novos sintomas",
-        "new_category": "Nova categoria",
-        "update_actor": "Ator da atualização",
-        "update": "Atualizar",
-        "incident_updated": "Incidente atualizado.",
-        "close": "Encerrar",
-        "reopen": "Reabrir",
-        "incident_closed": "Incidente encerrado.",
-        "incident_reopened": "Incidente reaberto.",
-        "logical_delete_reason": "Motivo da exclusão lógica",
-        "logical_delete_confirm": "Confirmo a exclusão lógica deste incidente",
-        "logical_delete": "Excluir logicamente",
-        "logical_delete_warning": "Confirme explicitamente a exclusão lógica.",
-        "logical_delete_success": "Incidente excluído logicamente.",
-        "immutable_history": "Histórico imutável",
-        "deterministic_triage": "Triagem determinística",
-        "persisted_category": "Categoria persistida: {category}",
-        "not_informed": "Não informada",
-        "triage_evidence": "Evidências de triagem (JSON)",
-        "triage_actor": "Ator da triagem",
-        "run_triage": "Executar triagem",
-        "result": "Resultado: {outcome}",
-        "field_route": "rota",
-        "field_escalation": "escalonamento",
-        "field_reasons": "razões",
-        "field_missing_evidence": "evidências ausentes",
-        "question": "Pergunta: {question}",
-        "triage_history": "Histórico de triagem",
-        "runbook_search": "Busca em runbooks",
-        "query": "Consulta",
-        "search": "Buscar",
-        "no_matches": "Nenhuma correspondência encontrada.",
-        "field_score": "score",
-        "field_terms": "termos",
-        "field_revision": "revisão",
-        "field_source": "fonte",
-        "performed_and_documentation": "Procedimentos realizados e documentação",
-        "procedure_safety_notice": (
-            "Procedimentos sugeridos são orientação; procedimentos realizados "
-            "são relatos e nunca são executados por esta interface."
-        ),
-        "performed_procedure": "Procedimento efetivamente realizado",
-        "observed_result": "Resultado observado",
-        "responsible_actor": "Ator responsável",
-        "record_procedure": "Registrar procedimento",
-        "procedure_recorded": (
-            "Procedimento registrado como relato; nenhuma ação foi executada."
-        ),
-        "generator_actor": "Ator gerador",
-        "generate_revision": "Gerar nova revisão",
-        "download": "Baixar {format}",
-        "impact_low": "Baixo",
-        "impact_moderate": "Moderado",
-        "impact_high": "Alto",
-        "impact_critical": "Crítico",
-    },
     "en": {
-        "language_selector": "Language / Idioma",
         "db_status": "Database v{version}; pending migrations: {pending}",
         "area": "Area",
         "page_dashboard": "Dashboard",
@@ -228,12 +113,12 @@ CATALOGS: Final[Mapping[LanguageCode, Mapping[str, str]]] = {
         "impact_moderate": "Moderate",
         "impact_high": "High",
         "impact_critical": "Critical",
-    },
+    }
 }
 
 
 def translate(language: LanguageCode, key: str, **values: object) -> str:
-    """Return one translated message and fail fast for an unknown key."""
+    """Return one English interface message and fail fast for an unknown key."""
     try:
         template = CATALOGS[language][key]
     except KeyError as error:
@@ -242,5 +127,5 @@ def translate(language: LanguageCode, key: str, **values: object) -> str:
 
 
 def catalog_keys(language: LanguageCode) -> frozenset[str]:
-    """Expose catalog keys for parity tests."""
+    """Expose catalog keys for presentation tests."""
     return frozenset(CATALOGS[language])
