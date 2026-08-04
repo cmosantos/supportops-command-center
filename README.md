@@ -262,6 +262,12 @@ Before publication, complete [`docs/publication/github-readiness.md`](docs/publi
 
 Read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening a change. Use synthetic data, preserve the deterministic and no-execution boundaries, and run the complete quality gate.
 
+## Acknowledgements
+
+SupportOps Command Center was designed and developed with the support of [Synkra AIOX](https://github.com/SynkraAI/aiox-core), an open-source multi-agent development framework maintained by SynkraAI.
+
+SupportOps Command Center is an independent project and is not affiliated with or endorsed by SynkraAI.
+
 ## License
 
 No license has been selected. Until a license is added, no permission is granted to copy, modify, or redistribute the project beyond rights provided by applicable law.
