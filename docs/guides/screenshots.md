@@ -8,7 +8,7 @@ Capture these views when refreshing publication assets:
 
 1. database health and dashboard;
 2. incident list and detail;
-3. deterministic triage result/questions;
+3. deterministic triage result and questions;
 4. runbook ranking and evidence;
 5. performed procedure and nine-section document;
 6. export result.
@@ -36,4 +36,4 @@ Before capture, verify that the browser, taskbar, terminal, and application cont
 - tokens, credentials, private keys, or internal URLs;
 - client or employer identifiers.
 
-Crop to the application surface, review the image at full resolution, and perform a second manual review before committing it. The current UI is Portuguese-first; English localization is a roadmap item.
+Crop to the application surface, review the image at full resolution, and perform a second manual review before committing it. Capture the English production interface only; no language selector should be visible.
