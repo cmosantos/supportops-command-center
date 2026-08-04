@@ -20,7 +20,7 @@ uv run supportops incident history $incident
 # Deliberately incomplete evidence demonstrates deterministic diagnostic questions.
 uv run supportops triage run $incident --evidence-json '{"impact":"moderate","urgency":"moderate"}' --actor demo-analyst --format json
 uv run supportops triage history $incident --format json
-uv run supportops knowledge search "onedrive sincronização" --limit 3 --format json
+uv run supportops knowledge search "OneDrive synchronization" --limit 3 --format json
 
 uv run supportops performed record $incident --description "Checked client state" --result "Client was paused" --actor demo-analyst --format json
 uv run supportops performed list $incident --format json
