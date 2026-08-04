@@ -17,23 +17,23 @@ class Model(SimpleNamespace):
         return dict(self.__dict__)
 
 
-def incident(ident: str, title: str = "Caso", status: str = "OPEN") -> Model:
+def incident(ident: str, title: str = "Case", status: str = "OPEN") -> Model:
     return Model(
         id=ident,
         title=title,
-        description="Descrição",
-        affected_party="Pessoa",
-        affected_service="Serviço",
+        description="Description",
+        affected_party="Person",
+        affected_service="Service",
         impact="low",
         urgency="low",
-        symptoms="Sintoma",
-        category="categoria",
+        symptoms="Symptom",
+        category="category",
         status=Model(value=status),
         version=1,
         created_at=datetime.now(UTC),
         updated_at=datetime.now(UTC),
         closed_at=None,
-        created_by="ator",
+        created_by="actor",
     )
 
 
@@ -102,7 +102,7 @@ class FakeFacade:
         return (
             Model(
                 event_type="INCIDENT_CREATED",
-                actor_reference="ator",
+                actor_reference="actor",
                 occurred_at=datetime.now(UTC),
                 model_dump=lambda **_: {"event_type": "INCIDENT_CREATED"},
             ),
@@ -118,7 +118,7 @@ class FakeFacade:
             escalation_required=complete,
             escalation_reason_ids=("risk",) if complete else (),
             missing_evidence=() if complete else ("impact",),
-            questions=(Model(question="Qual o impacto?"),),
+            questions=(Model(question="What is the impact?"),),
             model_dump=lambda **_: {},
         )
 
@@ -137,8 +137,8 @@ class FakeFacade:
                 title="Runbook",
                 category="network",
                 score=90,
-                matched_terms=("rede",),
-                excerpt="Evidência",
+                matched_terms=("network",),
+                excerpt="Evidence",
                 revision="1.0.0",
                 source_path="runbook.md",
             ),
@@ -155,7 +155,7 @@ class FakeFacade:
         self.calls.append("document")
         sections = Model(
             **{
-                name: "conteúdo"
+                name: "content"
                 for name in (
                     "executive_summary",
                     "technical_description",
@@ -202,13 +202,13 @@ def test_dashboard_empty_and_incident_create_rerun_is_idempotent() -> None:
     fake = FakeFacade()
     at = app(fake)
     assert [metric.value for metric in at.metric][:4] == ["0", "0", "0", "0"]
-    at.sidebar.radio[0].set_value("Incidentes").run()
-    widget(at.text_input, "Título").set_value("Novo")
-    widget(at.text_input, "Parte afetada").set_value("Pessoa")
-    widget(at.text_input, "Serviço afetado").set_value("Rede")
-    widget(at.text_area, "Descrição").set_value("Descrição")
-    widget(at.text_area, "Sintomas").set_value("Sintoma")
-    widget(at.button, "Cadastrar").click().run()
+    at.sidebar.radio[0].set_value("Incidents").run()
+    widget(at.text_input, "Title").set_value("New")
+    widget(at.text_input, "Affected party").set_value("Person")
+    widget(at.text_input, "Affected service").set_value("Network")
+    widget(at.text_area, "Description").set_value("Description")
+    widget(at.text_area, "Symptoms").set_value("Symptom")
+    widget(at.button, "Register").click().run()
     assert fake.calls.count("create") == 1
     at.run()
     assert fake.calls.count("create") == 1
@@ -216,36 +216,36 @@ def test_dashboard_empty_and_incident_create_rerun_is_idempotent() -> None:
 
 def test_incident_filters_update_transitions_delete_and_history() -> None:
     fake = FakeFacade()
-    fake.create_from_fields("Caso", "", "", "", "", "", "", "", "categoria")
+    fake.create_from_fields("Case", "", "", "", "", "", "", "", "category")
     at = app(fake)
-    at.sidebar.radio[0].set_value("Incidentes").run()
-    assert widget(at.selectbox, "Filtrar prioridade")
-    assert widget(at.text_input, "Filtrar categoria")
-    widget(at.text_input, "Filtrar texto").set_value("missing").run()
-    assert any(info.value == "Nenhum incidente encontrado." for info in at.info)
-    widget(at.text_input, "Filtrar texto").set_value("").run()
-    widget(at.text_input, "Novo título").set_value("Atualizado")
-    widget(at.button, "Atualizar").click().run()
-    assert fake.update_args[2] == "Atualizado"
+    at.sidebar.radio[0].set_value("Incidents").run()
+    assert widget(at.selectbox, "Filter priority")
+    assert widget(at.text_input, "Filter category")
+    widget(at.text_input, "Filter text").set_value("missing").run()
+    assert any(info.value == "No incidents found." for info in at.info)
+    widget(at.text_input, "Filter text").set_value("").run()
+    widget(at.text_input, "New title").set_value("Updated")
+    widget(at.button, "Update").click().run()
+    assert fake.update_args[2] == "Updated"
     assert fake.update_args[3:8] == (
-        "Descrição",
-        "Pessoa",
-        "Serviço",
-        "Sintoma",
-        "categoria",
+        "Description",
+        "Person",
+        "Service",
+        "Symptom",
+        "category",
     )
     at.run()
     assert fake.calls.count("update") == 1
-    widget(at.button, "Encerrar").click().run()
-    widget(at.button, "Reabrir").click().run()
+    widget(at.button, "Close").click().run()
+    widget(at.button, "Reopen").click().run()
     assert {"update", "close", "reopen"}.issubset(fake.calls)
     at.run()
     assert fake.calls.count("close") == fake.calls.count("reopen") == 1
-    widget(at.text_input, "Motivo da exclusão lógica").set_value("duplicado")
-    widget(at.button, "Excluir logicamente").click().run()
+    widget(at.text_input, "Logical deletion reason").set_value("duplicate")
+    widget(at.button, "Logically delete").click().run()
     assert "delete" not in fake.calls
-    widget(at.checkbox, "Confirmo a exclusão lógica deste incidente").check()
-    widget(at.button, "Excluir logicamente").click().run()
+    widget(at.checkbox, "I confirm the logical deletion of this incident").check()
+    widget(at.button, "Logically delete").click().run()
     assert "delete" in fake.calls
     at.run()
     assert fake.calls.count("delete") == 1
@@ -254,64 +254,64 @@ def test_incident_filters_update_transitions_delete_and_history() -> None:
 
 def test_triage_and_knowledge_states_and_safe_errors() -> None:
     fake = FakeFacade()
-    fake.create_from_fields("Caso", "", "", "", "", "", "", "", "cat")
+    fake.create_from_fields("Case", "", "", "", "", "", "", "", "cat")
     at = app(fake)
-    at.sidebar.radio[0].set_value("Triagem").run()
-    widget(at.button, "Executar triagem").click().run()
+    at.sidebar.radio[0].set_value("Triage").run()
+    widget(at.button, "Run triage").click().run()
     assert any("triage_incomplete" in item.value for item in at.markdown)
-    widget(at.text_area, "Evidências de triagem (JSON)").set_value(
+    widget(at.text_area, "Triage evidence (JSON)").set_value(
         '{"impact":"critical","urgency":"critical"}'
     )
-    widget(at.button, "Executar triagem").click().run()
-    assert any("Pergunta:" in item.value for item in at.markdown)
+    widget(at.button, "Run triage").click().run()
+    assert any("Question:" in item.value for item in at.markdown)
     at.run()
     assert fake.calls.count("triage") == 2
-    at.sidebar.radio[0].set_value("Conhecimento").run()
-    widget(at.text_input, "Consulta").set_value("rede")
-    widget(at.button, "Buscar").click().run()
+    at.sidebar.radio[0].set_value("Knowledge").run()
+    widget(at.text_input, "Query").set_value("network")
+    widget(at.button, "Search").click().run()
     assert any("1. Runbook" in item.value for item in at.subheader)
-    assert any(text.value == "Evidência" for text in at.text)
-    widget(at.text_input, "Consulta").set_value("none")
-    widget(at.button, "Buscar").click().run()
-    assert any(info.value == "Nenhuma correspondência encontrada." for info in at.info)
-    widget(at.text_input, "Consulta").set_value("error")
-    widget(at.button, "Buscar").click().run()
+    assert any(text.value == "Evidence" for text in at.text)
+    widget(at.text_input, "Query").set_value("none")
+    widget(at.button, "Search").click().run()
+    assert any(info.value == "No matches found." for info in at.info)
+    widget(at.text_input, "Query").set_value("error")
+    widget(at.button, "Search").click().run()
     assert any(
-        error.value == "A operação falhou com segurança. Tente novamente."
+        error.value == "The operation failed safely. Try again."
         for error in at.error
     )
 
 
 def test_performed_document_nine_sections_and_two_downloads() -> None:
     fake = FakeFacade()
-    fake.create_from_fields("Caso", "", "", "", "", "", "", "", "cat")
+    fake.create_from_fields("Case", "", "", "", "", "", "", "", "cat")
     at = app(fake)
-    at.sidebar.radio[0].set_value("Procedimentos e documentos").run()
-    widget(at.text_area, "Procedimento efetivamente realizado").set_value("Teste")
-    widget(at.text_area, "Resultado observado").set_value("OK")
-    inputs = [item for item in at.text_input if item.label == "Ator responsável"]
-    inputs[0].set_value("analista")
-    widget(at.button, "Registrar procedimento").click().run()
-    widget(at.text_input, "Ator gerador").set_value("analista")
-    widget(at.button, "Gerar nova revisão").click().run()
+    at.sidebar.radio[0].set_value("Procedures and documents").run()
+    widget(at.text_area, "Procedure actually performed").set_value("Test")
+    widget(at.text_area, "Observed result").set_value("OK")
+    inputs = [item for item in at.text_input if item.label == "Responsible actor"]
+    inputs[0].set_value("analyst")
+    widget(at.button, "Record procedure").click().run()
+    widget(at.text_input, "Generator actor").set_value("analyst")
+    widget(at.button, "Generate new revision").click().run()
     assert fake.calls.count("performed") == fake.calls.count("document") == 1
     at.run()
     assert fake.calls.count("performed") == fake.calls.count("document") == 1
     assert len(at.download_button) == 2
     assert {item.label for item in at.download_button} == {
-        "Baixar MARKDOWN",
-        "Baixar JSON",
+        "Download MARKDOWN",
+        "Download JSON",
     }
     assert "executive_summary" in str(at.json[-1].value)
 
 
 def test_priority_category_filters_are_passed_to_facade() -> None:
     fake = FakeFacade()
-    fake.create_from_fields("Caso", "", "", "", "", "", "", "", "cat")
+    fake.create_from_fields("Case", "", "", "", "", "", "", "", "cat")
     at = app(fake)
-    at.sidebar.radio[0].set_value("Incidentes").run()
-    widget(at.selectbox, "Filtrar prioridade").set_value("P2")
-    widget(at.text_input, "Filtrar categoria").set_value("cat").run()
+    at.sidebar.radio[0].set_value("Incidents").run()
+    widget(at.selectbox, "Filter priority").set_value("P2")
+    widget(at.text_input, "Filter category").set_value("cat").run()
     filters = cast(IncidentFilters, fake.filter_calls[-1])
     assert filters.priority == "P2"
     assert filters.category == "cat"
@@ -319,8 +319,8 @@ def test_priority_category_filters_are_passed_to_facade() -> None:
 
 def test_triage_and_document_state_do_not_cross_incidents() -> None:
     fake = FakeFacade()
-    fake.create_from_fields("Caso A", "", "", "", "", "", "", "", "cat-a")
-    second = incident("I-2", "Caso B")
+    fake.create_from_fields("Case A", "", "", "", "", "", "", "", "cat-a")
+    second = incident("I-2", "Case B")
     second.category = "cat-b"
     fake.views.append(
         Model(
@@ -331,19 +331,19 @@ def test_triage_and_document_state_do_not_cross_incidents() -> None:
         )
     )
     at = app(fake)
-    at.sidebar.radio[0].set_value("Triagem").run()
-    widget(at.button, "Executar triagem").click().run()
+    at.sidebar.radio[0].set_value("Triage").run()
+    widget(at.button, "Run triage").click().run()
     assert any("triage_incomplete" in item.value for item in at.markdown)
-    widget(at.selectbox, "Incidente").set_value("Caso B — I-2").run()
+    widget(at.selectbox, "Incident").set_value("Case B — I-2").run()
     assert not any("triage_incomplete" in item.value for item in at.markdown)
-    assert any("Categoria persistida: cat-b" in item.value for item in at.caption)
+    assert any("Persisted category: cat-b" in item.value for item in at.caption)
 
-    at.sidebar.radio[0].set_value("Procedimentos e documentos").run()
-    widget(at.selectbox, "Incidente").set_value("Caso A — I-1").run()
-    widget(at.text_input, "Ator gerador").set_value("analista")
-    widget(at.button, "Gerar nova revisão").click().run()
+    at.sidebar.radio[0].set_value("Procedures and documents").run()
+    widget(at.selectbox, "Incident").set_value("Case A — I-1").run()
+    widget(at.text_input, "Generator actor").set_value("analyst")
+    widget(at.button, "Generate new revision").click().run()
     assert at.download_button
-    widget(at.selectbox, "Incidente").set_value("Caso B — I-2").run()
+    widget(at.selectbox, "Incident").set_value("Case B — I-2").run()
     assert not at.download_button
 
 
