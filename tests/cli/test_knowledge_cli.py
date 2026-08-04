@@ -8,7 +8,7 @@ from supportops.cli import main
 def test_human_search_shows_ranking_and_evidence(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    assert main(["knowledge", "search", "sincronização OneDrive"]) == 0
+    assert main(["knowledge", "search", "OneDrive synchronization"]) == 0
     output = capsys.readouterr().out
     assert "Knowledge matches:" in output
     assert "score:" in output
@@ -19,7 +19,7 @@ def test_human_search_shows_ranking_and_evidence(
 
 
 def test_json_search_is_structured(capsys: pytest.CaptureFixture[str]) -> None:
-    assert main(["knowledge", "search", "conta bloqueada", "--format", "json"]) == 0
+    assert main(["knowledge", "search", "account locked", "--format", "json"]) == 0
     payload = json.loads(capsys.readouterr().out)
     assert payload["results"][0]["id"] == "identity-user-locked"
     assert payload["results"][0]["score"] > 0
@@ -27,9 +27,9 @@ def test_json_search_is_structured(capsys: pytest.CaptureFixture[str]) -> None:
 
 
 def test_no_results_human_and_json(capsys: pytest.CaptureFixture[str]) -> None:
-    assert main(["knowledge", "search", "termo-inexistente"]) == 0
+    assert main(["knowledge", "search", "missing-term"]) == 0
     assert capsys.readouterr().out.strip() == "No knowledge matches found."
-    assert main(["knowledge", "search", "termo-inexistente", "--format", "json"]) == 0
+    assert main(["knowledge", "search", "missing-term", "--format", "json"]) == 0
     assert json.loads(capsys.readouterr().out)["results"] == []
 
 
