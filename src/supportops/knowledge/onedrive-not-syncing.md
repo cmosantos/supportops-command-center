@@ -1,28 +1,28 @@
 +++
 id = "onedrive-not-syncing"
-title = "OneDrive sem sincronização"
-aliases = ["OneDrive parado", "arquivos não sincronizam", "sync pendente"]
+title = "OneDrive is not synchronizing"
+aliases = ["OneDrive stopped", "files are not syncing", "sync pending"]
 category = "Microsoft 365"
-symptoms = ["Ícone de sincronização permanece pendente", "Arquivos locais não chegam à nuvem"]
-keywords = ["OneDrive", "sincronização", "nuvem", "quota"]
-risk_notes = ["Não excluir cópias locais", "Não redefinir o cliente sem backup validado"]
-escalation_criteria = ["Possível perda de dados", "Biblioteca ou conta indisponível"]
+symptoms = ["The synchronization icon remains pending", "Local files do not reach the cloud"]
+keywords = ["OneDrive", "synchronization", "cloud", "quota"]
+risk_notes = ["Do not delete local copies", "Do not reset the client without a validated backup"]
+escalation_criteria = ["Possible data loss", "The library or account is unavailable"]
 revision = "1.0.0"
 +++
-# Objetivo
+# Objective
 
-Coletar evidências para falha de sincronização do OneDrive preservando os arquivos.
+Collect evidence for a OneDrive synchronization failure while preserving files.
 
-## Evidências seguras
+## Safe evidence
 
-- Observe o estado do ícone, a quantidade aproximada de itens pendentes e a última sincronização.
-- Verifique espaço local, quota informada e se o portal autorizado abre normalmente.
-- Registre nomes de erro genéricos; não copie conteúdo confidencial dos arquivos.
+- Observe the icon status, the approximate number of pending items, and the last successful synchronization.
+- Check available local space, the reported quota, and whether the authorized web portal opens normally.
+- Record generic error names without copying confidential file content.
 
-## Orientação não executável
+## Non-executable guidance
 
-Confirme conectividade e status da conta. Oriente o usuário a manter os arquivos locais intactos até a equipe autorizada avaliar conflito, quota ou vínculo da biblioteca.
+Confirm connectivity and account status. Instruct the user to keep local files intact until the authorized team evaluates conflicts, quota, or the library connection.
 
-## Pare e escale
+## Stop and escalate
 
-Pare antes de desvincular, redefinir ou excluir qualquer pasta quando existir risco de perda de dados.
+Stop before unlinking, resetting, or deleting any folder when there is a risk of data loss.
